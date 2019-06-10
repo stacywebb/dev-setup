@@ -8,7 +8,8 @@
 # To install elsewhere you can clone the project
 #   git clone https://github.com/marcosgomesborges/dev-setup
 ###########################################################
-VERSION='0.0.1'
+VERSION='0.0.2'
+MACOS_URL='https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos'
 
 usage() {
 cat <<EOF
@@ -24,18 +25,32 @@ print_version() {
   echo -e "macos-setup ${VERSION}"
 }
 
-usage_fatal() { echo -e "$*\n"; usage >&2; }
+usage_fatal() { echo -e "${*}\n"; usage >&2; }
 
+
+# Update macos-setup script
+###########################################################
+macos_update() {
+    echo -e "Updating macos-setup ${VERSION}"
+    curl -fsSL ${MACOS_URL} -o /usr/local/bin/macos && chmod +x /usr/local/bin/macos
+}
+
+
+# Parse options
+###########################################################
 while [ "$#" -gt 0 ]; do
-    arg=$1
     case $1 in
         --*'='*)
             shift
-            set -- "${arg%%=*}" "${arg#*=}" "$@"
+            set -- "${1%%=*}" "${1#*=}" "$@"
             continue
             ;;
         -h|--help)
             usage
+            exit 0
+            ;;
+        -u|--update)
+            macos_update
             exit 0
             ;;
         -v|--version)
@@ -43,7 +58,7 @@ while [ "$#" -gt 0 ]; do
             exit 0
             ;;
         --|-*|*)
-            usage_fatal "unknown option: $1"
+            usage_fatal "unknown option: ${1}"
             exit 1
             ;;
     esac
