@@ -7,9 +7,9 @@ Setting up a new development environment can be a manual and time-consuming proc
 * Windows
 * Docker
 
-## Install macOS-setup
+## Install macOS-setup script
 
-To install setup-macos to `/usr/local`, paste at a terminal prompt:
+To install macOS-setup script to `/usr/local`, paste at a terminal prompt:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos -o /usr/local/bin/macos && chmod +x /usr/local/bin/macos
@@ -24,6 +24,13 @@ The basic macos-setup command takes this form: `macos <command>`
 | `-h, --help`      | print the help message                            |
 | `-v, --version`   | print the version number of macos-setup script    |
 | `-u, --update`    | update macos-setup script                         |
+| `-i, --install`   | install a macOS package                           |
+
+To install a package: `macos install <package>`
+
+| Package           | Description                                                                   |
+| ---               | ---                                                                           |
+| `homebrew`        | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
 
 ## Contribute
 
