@@ -7,26 +7,28 @@ Setting up a new development environment can be a manual and time-consuming proc
 * Windows
 * Docker
 
-## Install macOS-setup script
+## devsetup essential commands
 
-To install macOS-setup script to `/usr/local`, paste at a terminal prompt:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos -o /usr/local/bin/macos && chmod +x /usr/local/bin/macos
-```
-
-### macOS-setup essential commands
-
-The basic macos-setup command takes this form: `macos <command>`
+The basic devsetup command takes this form: `devsetup <command>`
 
 | Command           | Description                                       |
 | ---               | ---                                               |
 | `-h, --help`      | print the help message                            |
-| `-v, --version`   | print the version number of macos-setup script    |
-| `-u, --update`    | update macos-setup script                         |
-| `-i, --install`   | install a macOS package                           |
+| `-v, --version`   | print the version number of devsetup              |
+| `-u, --update`    | update a package                                  |
+| `-i, --install`   | install a package                                 |
 
-To install a package: `macos install <package>`
+## Install devsetup for macOS
+
+To install devsetup for macOS to `/usr/local`, paste at a terminal prompt:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/install_macos)
+```
+
+### devsetup install for macOS
+
+To install a package: `devsetup install <package>`
 
 | Package           | Description                                                                   |
 | ---               | ---                                                                           |

@@ -1,43 +1,40 @@
 #!/bin/bash
 ###########################################################
-# macOS Development Environment Setup
+# Development Environment Setup
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-# This script installs to /usr/local
-# To install elsewhere you can clone the project
-#   git clone https://github.com/marcosgomesborges/dev-setup
-###########################################################
-VERSION='0.0.2'
-MACOS_URL='https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos'
+VERSION="0.0.1"
+DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
+DEVSETUP_PREFIX=`pwd`
 
-# macOS usage
+# devsetup usage
 ###########################################################
 usage() {
 cat <<EOF
-    Usage: macos [OPTIONS]
+    Usage: devsetup [OPTIONS]
 
     Option          Long option         Meaning
     -h              --help              Show this help text and exit
-    -v              --version           Show the version number of macos script
+    -v              --version           Show the version number of devsetup script
 EOF
 }
 
-# macOS install usage
+# devsetup install usage
 ###########################################################
 usage_install() {
 cat <<EOF
-    Usage: macos install [SCRIPT]
+    Usage: devsetup install [SCRIPT]
 
     Script          Description
     homebrew        Install homebrew package manager for macOS
 EOF
 }
 
-# Print a formated message
-# print_msg COLOR FRAME MSG
+# Print formated message
+# print COLOR FRAME MSG
 ###########################################################
-print_msg() {
+print() {
     COLOR=$1
     FRAME=$2
     MSG=$3
@@ -58,12 +55,12 @@ print_msg() {
     esac
 
     case "${FRAME}" in
-        true)
+        "frame")
             echo -e "${COLOR}`printf "=%0.s" {0..79}`"
             echo -e "${COLOR}${MSG}"
             echo -e "${COLOR}`printf "=%0.s" {0..79}`"
             ;;
-        false)
+        *)
             echo -e "${COLOR}${MSG}"
             ;;
     esac
@@ -71,31 +68,24 @@ print_msg() {
     echo -e "\033[39m" # default color
 }
 
-# Print the version number of macos script
+# Print the version number of devsetup script
 ###########################################################
 print_version() {
-  echo -e "macos ${VERSION}"
+  echo -e "devsetup ${VERSION}"
 }
 
 # Usage error
 ###########################################################
-usage_fatal() { print_msg red false "${*}"; usage >&2; }
-usage_install_fatal() { print_msg red false "${*}"; usage_install >&2; }
+usage_fatal() { print red "${*}"; usage >&2; }
+usage_install_fatal() { print red "${*}"; usage_install >&2; }
 
-# Update macos script
+# devsetup install homebrew
 ###########################################################
-macos_update() {
-    echo -e "Updating macos ${VERSION}"
-    curl -fsSL ${MACOS_URL} -o /usr/local/bin/macos && chmod +x /usr/local/bin/macos
-}
-
-# macos install homebrew
-###########################################################
-macos_install_homebrew() {
-    print_msg yellow true "Starting Homebrew installation"
+devsetup_install_homebrew() {
+    print yellow frame "Starting Homebrew installation"
 
     # Installing GCC
-    print_msg yellow false "Installing the GNU Compiler Collection (GCC)"
+    print yellow "Installing the GNU Compiler Collection (GCC)"
 
     # Install the Command Line Tools package
     xcode-select --install
@@ -104,29 +94,62 @@ macos_install_homebrew() {
     sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 
     # Installing Homebrew
-    print_msg yellow false "Installing Homebrew"
+    print yellow "Installing Homebrew"
 
     if hash brew 2>/dev/null; then
-        print_msg green "Brew is already installed - updating ..."
+        print green "Brew is already installed - updating ..."
         brew update
         brew upgrade
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
-    print_msg green true "Homebrew installation was successful"
+    print green frame "Homebrew installation successful"
 }
 
-# macos install
+# devsetup install
 ###########################################################
-macos_install() {
+devsetup_install() {
     case ${@} in
-        'homebrew')
-            macos_install_homebrew
+        "homebrew")
+            devsetup_install_homebrew
             exit 0
             ;;
         ""|*)
             usage_install_fatal "invalid installation command"
+            exit 1
+            ;;
+    esac
+}
+
+# devsetup update devsetup
+###########################################################
+devsetup_update_devsetup() {
+    print yellow "This update installs to ${DEVSETUP_PREFIX}/devsetup"
+    print default "Press RETURN to continue or any other key to abort"
+
+    read -s -n 1 key
+    if [[ $key != "" ]]; then
+        print red "\nUpdate aborted!"
+        exit 1
+    fi
+
+    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup" && \
+    chmod +x "${DEVSETUP_PREFIX}/devsetup"
+
+    print green "\nUpdate successful"
+}
+
+# devsetup update
+###########################################################
+devsetup_update() {
+    case ${@} in
+        "devsetup")
+            devsetup_update_devsetup
+            exit 0
+            ;;
+        ""|*)
+            usage_install_fatal "invalid update command"
             exit 1
             ;;
     esac
@@ -151,11 +174,11 @@ while [ "${#}" -gt 0 ]; do
             ;;
         -i|--install)
             shift
-            macos_install ${1}
+            devsetup_install ${1}
             exit 0
             ;;
         -u|--update)
-            macos_update
+            devsetup_update ${1}
             exit 0
             ;;
         --|-*|*)
