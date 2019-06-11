@@ -15,8 +15,8 @@ The basic devsetup command takes this form: `devsetup <command>`
 | ---               | ---                                               |
 | `-h, --help`      | print the help message                            |
 | `-v, --version`   | print the version number of devsetup              |
-| `-u, --update`    | update a package                                  |
 | `-i, --install`   | install a package                                 |
+| `-u, --update`    | update a package                                  |
 
 ## Install devsetup for macOS
 
