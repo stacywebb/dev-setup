@@ -6,7 +6,7 @@
 ###########################################################
 VERSION="0.0.1"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
-DEVSETUP_PREFIX=`pwd`
+DEVSETUP_PREFIX=$(dirname $0)
 
 # devsetup usage
 ###########################################################
