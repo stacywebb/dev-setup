@@ -48,9 +48,9 @@ EOF
 # print COLOR FRAME MSG
 ###########################################################
 print() {
-    COLOR=$1
-    FRAME=$2
-    MSG=$3
+    COLOR=${1}
+    FRAME=${2}
+    MSG=${3}
 
     case "${COLOR}" in
         *"red"*)
@@ -89,17 +89,17 @@ print_version() {
 
 # Usage error
 ###########################################################
-usage_fatal() { print red noframe "${*}"; usage >&2; }
-usage_install_fatal() { print red noframe "${*}"; usage_install >&2; }
-usage_update_fatal() { print red noframe "${*}"; usage_update >&2; }
+usage_fatal() { print red false "${*}"; usage >&2; }
+usage_install_fatal() { print red false "${*}"; usage_install >&2; }
+usage_update_fatal() { print red false "${*}"; usage_update >&2; }
 
 # devsetup install homebrew
 ###########################################################
 devsetup_install_homebrew() {
-    print yellow frame "Starting Homebrew installation"
+    print yellow true "Starting Homebrew installation"
 
     # Installing GCC
-    print yellow "Installing the GNU Compiler Collection (GCC)"
+    print yellow false "Installing the GNU Compiler Collection (GCC)"
 
     # Install the Command Line Tools package
     xcode-select --install
@@ -108,17 +108,17 @@ devsetup_install_homebrew() {
     sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 
     # Installing Homebrew
-    print yellow "Installing Homebrew"
+    print yellow false "Installing Homebrew"
 
     if hash brew 2>/dev/null; then
-        print green "Brew is already installed - updating ..."
+        print green false "Brew is already installed - updating ..."
         brew update
         brew upgrade
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
-    print green frame "Homebrew installation successful"
+    print green true "Homebrew installation successful"
 }
 
 # devsetup install
@@ -139,19 +139,19 @@ devsetup_install() {
 # devsetup update devsetup
 ###########################################################
 devsetup_update_devsetup() {
-    print yellow "This update installs to ${DEVSETUP_PREFIX}/devsetup"
-    print default "Press RETURN to continue or any other key to abort"
+    print yellow false "This update installs to ${DEVSETUP_PREFIX}/devsetup"
+    print default false "Press RETURN to continue or any other key to abort"
 
     read -s -n 1 key
     if [[ $key != "" ]]; then
-        print red "\nUpdate aborted!"
+        print red false "\nUpdate aborted!"
         exit 1
     fi
 
     curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup" && \
     chmod +x "${DEVSETUP_PREFIX}/devsetup"
 
-    print green "\nUpdate successful"
+    print green false "\nUpdate successful"
 }
 
 # devsetup update
