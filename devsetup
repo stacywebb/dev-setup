@@ -68,12 +68,12 @@ print() {
     esac
 
     case "${FRAME}" in
-        true)
+        "frame")
             echo -e "${COLOR}`printf "=%0.s" {0..79}`"
             echo -e "${COLOR}${MSG}"
             echo -e "${COLOR}`printf "=%0.s" {0..79}`"
             ;;
-        false)
+        *)
             echo -e "${COLOR}${MSG}"
             ;;
     esac
@@ -89,9 +89,9 @@ print_version() {
 
 # Usage error
 ###########################################################
-usage_fatal() { print red noframe "${*}"; usage >&2; }
-usage_install_fatal() { print red noframe "${*}"; usage_install >&2; }
-usage_update_fatal() { print red noframe "${*}"; usage_update >&2; }
+usage_fatal() { print red "${*}"; usage >&2; }
+usage_install_fatal() { print red "${*}"; usage_install >&2; }
+usage_update_fatal() { print red "${*}"; usage_update >&2; }
 
 # devsetup install homebrew
 ###########################################################
