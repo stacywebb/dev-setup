@@ -4,7 +4,7 @@
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-VERSION="0.0.1"
+VERSION="0.0.2"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX=$(dirname $0)
 
@@ -38,6 +38,7 @@ cat <<EOF
     Script          Description
     homebrew        Install homebrew package manager for macOS
     git             Install and set-up git
+    bash            Install the latest version of Bash
 EOF
 }
 
@@ -118,6 +119,16 @@ is_homebrew_installed() {
     fi
 }
 
+homebrew_update() {
+    print green false "Homebrew is already installed - updating ...\n"
+    brew update
+}
+
+homebrew_not_installed() {
+    print red false "\nHomebrew is not installed! Install it with:\n"
+    print yellow false "\ndesetup --install homebrew\n"
+}
+
 # devsetup install homebrew
 ###########################################################
 devsetup_install_homebrew() {
@@ -136,8 +147,7 @@ devsetup_install_homebrew() {
     print yellow false "Installing Homebrew\n"
 
     if is_homebrew_installed; then
-        print green false "Homebrew is already installed - updating ...\n"
-        brew update
+        homebrew_update
         brew upgrade
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -176,11 +186,9 @@ devsetup_install_git() {
     print yellow true "Installing Git\n"
 
     if is_homebrew_installed; then
-        print green false "Homebrew is already installed - updating ...\n"
-        brew update
+        homebrew_update
     else
-        print red false "\nHomebrew is not installed! Install it with:\n"
-        print yellow false "\ndesetup --install homebrew\n"
+        homebrew_not_installed
         exit 1
     fi
 
@@ -206,6 +214,35 @@ devsetup_install_git() {
     print green true "Git installation successful\n"
 }
 
+# devsetup install bash
+###########################################################
+devsetup_install_bash() {
+    set -e
+
+    print yellow true "Updating bash\n"
+
+    if is_homebrew_installed; then
+        homebrew_update
+    else
+        homebrew_not_installed
+        exit 1
+    fi
+
+    # Install the latest version of Bash
+    brew install bash
+
+    # Add the new shell to the list of allowed shells
+    if [[ `cat /etc/shells | grep '/usr/local/bin/bash'` = "" ]]; then
+        sudo bash -c 'echo /usr/local/bin/bash >> /etc/shells'
+        # Change to the new shell
+        chsh -s /usr/local/bin/bash
+    else
+        bash --version
+    fi
+
+    print green true "Bash installation successful\n"
+}
+
 # devsetup install
 ###########################################################
 devsetup_install() {
@@ -216,6 +253,10 @@ devsetup_install() {
             ;;
         "git")
             devsetup_install_git
+            exit 0
+            ;;
+        "bash")
+            devsetup_install_bash
             exit 0
             ;;
         ""|*)

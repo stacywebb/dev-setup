@@ -34,6 +34,7 @@ To install a package: `devsetup install <package>`
 | ---               | ---                                                                           |
 | `homebrew`        | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
 | `git`             | Install and set-up git                                                        |
+| `bash`            | Install the latest version of Bash                                            |
 
 ## Install devsetup for GNU/Linux
 
