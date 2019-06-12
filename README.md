@@ -33,6 +33,7 @@ To install a package: `devsetup install <package>`
 | macOS Package     | Description                                                                   |
 | ---               | ---                                                                           |
 | `homebrew`        | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
+| `git`             | Install and set-up git                                                        |
 
 ## Install devsetup for GNU/Linux
 
