@@ -8,6 +8,13 @@ VERSION="0.0.1"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX=$(dirname $0)
 
+COLOR_RED="\033[91m"
+COLOR_GREEN="\033[92m"
+COLOR_YELLOW="\033[93m"
+COLOR_BLUE="\033[94m"
+COLOR_MAGENTA="\033[95m"
+COLOR_DEFAULT="\033[39m"
+
 # devsetup usage
 ###########################################################
 usage() {
@@ -30,6 +37,7 @@ cat <<EOF
 
     Script          Description
     homebrew        Install homebrew package manager for macOS
+    git             Install and set-up git
 EOF
 }
 
@@ -53,38 +61,45 @@ print() {
     MSG=${3}
 
     case "${COLOR}" in
-        *"red"*)
-            COLOR="\033[91m";;
-        *"green"*)
-            COLOR="\033[92m";;
-        *"yellow"*)
-            COLOR="\033[93m";;
-        *"blue"*)
-            COLOR="\033[94m";;
-        *"magenta"*)
-            COLOR="\033[95m";;
-        *)
-            COLOR="\033[39m";;
+        *"red"*) COLOR=${COLOR_RED} ;;
+        *"green"*) COLOR=${COLOR_GREEN} ;;
+        *"yellow"*) COLOR=${COLOR_YELLOW} ;;
+        *"blue"*) COLOR=${COLOR_BLUE} ;;
+        *"magenta"*) COLOR=${COLOR_MAGENTA} ;;
+        *) COLOR=${COLOR_DEFAULT} ;;
     esac
 
     case "${FRAME}" in
         true)
-            echo -e "${COLOR}`printf "=%0.s" {0..79}`"
-            echo -e "${COLOR}${MSG}"
-            echo -e "${COLOR}`printf "=%0.s" {0..79}`"
+            printf "${COLOR}`printf "=%0.s" {0..79}`\n"
+            printf "${COLOR}${MSG}"
+            printf "${COLOR}`printf "=%0.s" {0..79}`\n"
             ;;
         false)
-            echo -e "${COLOR}${MSG}"
+            printf "${COLOR}${MSG}"
             ;;
     esac
 
-    echo -e "\033[39m" # default color
+    printf "${COLOR_DEFAULT}"
+}
+
+# Check Press RETURN to continue
+###########################################################
+devsetup_continue() {
+    print default false "\nPress RETURN to continue or any other key to abort!\n"
+    read -s -n 1 key
+
+    if [[ $key = "" ]]; then
+        true
+    else
+        false
+    fi
 }
 
 # Print the version number of devsetup script
 ###########################################################
 print_version() {
-  echo -e "devsetup ${VERSION}"
+  print default false "devsetup ${VERSION}\n"
 }
 
 # Usage error
@@ -93,13 +108,23 @@ usage_fatal() { print red false "${*}"; usage >&2; }
 usage_install_fatal() { print red false "${*}"; usage_install >&2; }
 usage_update_fatal() { print red false "${*}"; usage_update >&2; }
 
+# Check if Homebrew is installed
+###########################################################
+is_homebrew_installed() {
+    if hash brew 2>/dev/null; then
+        true
+    else
+        false
+    fi
+}
+
 # devsetup install homebrew
 ###########################################################
 devsetup_install_homebrew() {
-    print yellow true "Starting Homebrew installation"
+    print yellow true "Starting Homebrew installation\n"
 
     # Installing GCC
-    print yellow false "Installing the GNU Compiler Collection (GCC)"
+    print yellow false "Installing the GNU Compiler Collection (GCC)\n"
 
     # Install the Command Line Tools package
     xcode-select --install
@@ -108,17 +133,77 @@ devsetup_install_homebrew() {
     sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 
     # Installing Homebrew
-    print yellow false "Installing Homebrew"
+    print yellow false "Installing Homebrew\n"
 
-    if hash brew 2>/dev/null; then
-        print green false "Brew is already installed - updating ..."
+    if is_homebrew_installed; then
+        print green false "Homebrew is already installed - updating ...\n"
         brew update
         brew upgrade
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
-    print green true "Homebrew installation successful"
+    print green true "Homebrew installation successful\n"
+}
+
+# devsetup install git
+###########################################################
+devsetup_git_config() {
+    print yellow true "GIT Setup\n"
+
+    print magenta false "git config --global user.name: "
+    read GIT_USER_NAME
+
+    print magenta false "git config --global user.email: "
+    read GIT_USER_EMAIL
+
+    # Confirm user input
+    print green false "\nUser Name: ${GIT_USER_NAME}\n"
+    print green false "E-mail: ${GIT_USER_EMAIL}\n"
+
+    if ! devsetup_continue; then
+        print red false "\ngit config aborted!\n"
+        return 1
+    fi
+}
+
+devsetup_install_git() {
+    if ! devsetup_git_config; then
+        print red false "\ngit installation aborted!\n"
+        exit 1
+    fi
+
+    print yellow true "Installing Git\n"
+
+    if is_homebrew_installed; then
+        print green false "Homebrew is already installed - updating ...\n"
+        brew update
+    else
+        print red false "\nHomebrew is not installed! Install it with:\n"
+        print yellow false "\ndesetup --install homebrew\n"
+        exit 1
+    fi
+
+    # Install Git
+    brew install git
+
+    # Configure Git
+    print yellow false "\nConfigure Git\n"
+
+    # User name and email
+    git config --global user.name "${GIT_USER_NAME}"
+    git config --global user.email "${GIT_USER_EMAIL}"
+
+    # Set Git terminal colors
+    git config --global color.ui true
+    git config --global color.status.changed "blue normal"
+    git config --global color.status.untracked "red normal"
+    git config --global color.status.added "magenta normal"
+    git config --global color.status.updated "green normal"
+    git config --global color.status.branch "yellow normal bold"
+    git config --global color.status.header "white normal bold"
+
+    print green true "Git installation successful\n"
 }
 
 # devsetup install
@@ -129,8 +214,12 @@ devsetup_install() {
             devsetup_install_homebrew
             exit 0
             ;;
+        "git")
+            devsetup_install_git
+            exit 0
+            ;;
         ""|*)
-            usage_install_fatal "invalid installation command"
+            usage_install_fatal "invalid installation command\n"
             exit 1
             ;;
     esac
@@ -139,19 +228,17 @@ devsetup_install() {
 # devsetup update devsetup
 ###########################################################
 devsetup_update_devsetup() {
-    print yellow false "This update installs to ${DEVSETUP_PREFIX}/devsetup"
-    print default false "Press RETURN to continue or any other key to abort"
+    print yellow false "This update installs to ${DEVSETUP_PREFIX}/devsetup\n"
 
-    read -s -n 1 key
-    if [[ $key != "" ]]; then
-        print red false "\nUpdate aborted!"
+    if ! devsetup_continue; then
+        print red false "\nUpdate aborted!\n"
         exit 1
     fi
 
     curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup" && \
     chmod +x "${DEVSETUP_PREFIX}/devsetup"
 
-    print green false "\nUpdate successful"
+    print green false "\nUpdate successful\n"
 }
 
 # devsetup update
@@ -163,7 +250,7 @@ devsetup_update() {
             exit 0
             ;;
         ""|*)
-            usage_update_fatal "invalid update command"
+            usage_update_fatal "\ninvalid update command\n"
             exit 1
             ;;
     esac
@@ -197,7 +284,7 @@ while [ "${#}" -gt 0 ]; do
             exit 0
             ;;
         --|-*|*)
-            usage_fatal "unknown option: ${1}"
+            usage_fatal "\nunknown option: ${1}\n"
             exit 1
             ;;
     esac
