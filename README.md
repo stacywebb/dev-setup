@@ -26,13 +26,29 @@ To install devsetup for macOS to `/usr/local`, paste at a terminal prompt:
 bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/install_macos)
 ```
 
-### devsetup install for macOS
+### macOS Packages
 
 To install a package: `devsetup install <package>`
 
-| Package           | Description                                                                   |
+| macOS Package     | Description                                                                   |
 | ---               | ---                                                                           |
 | `homebrew`        | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
+
+## Install devsetup for GNU/Linux
+
+To install devsetup for GNU/Linux to `/usr/local`, paste at a terminal prompt:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/install_linux)
+```
+
+### GNU/Linux Packages
+
+To install a package: `devsetup install <package>`
+
+| GNU/Linux Package | Description                                                                   |
+| ---               | ---                                                                           |
+| `ToDo`            | Coming soon!                                                                  |
 
 ## Contribute
 

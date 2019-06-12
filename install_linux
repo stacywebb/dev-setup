@@ -1,0 +1,35 @@
+#!/bin/bash
+###########################################################
+# GNU/Linux Development Environment Setup
+#
+# Copyright (c) Marcos Gomes-Borges
+###########################################################
+# This script installs to /usr/local
+# To install elsewhere you can clone the project
+#   git clone https://github.com/marcosgomesborges/dev-setup
+###########################################################
+INSTALL_VERSION="0.0.1"
+DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/linux/devsetup"
+DEVSETUP_PREFIX="/usr/local"
+
+COLOR_RED="\033[91m"
+COLOR_GREEN="\033[92m"
+COLOR_YELLOW="\033[93m"
+COLOR_DEFAULT="\033[39m"
+
+echo -e "${COLOR_YELLOW}\nThis script installs to ${DEVSETUP_PREFIX}/bin/devsetup\n"
+echo -e "${COLOR_DEFAULT}Press RETURN to continue or any other key to abort"
+
+read -s -n 1 key
+if [[ $key != "" ]]; then
+    echo -e "${COLOR_RED}\nInstallation aborted!"
+    echo -e "${COLOR_DEFAULT}"
+    exit 1
+fi
+
+curl -fsSL ${DEVSETUP_URL} -o "${DEVSETUP_PREFIX}/bin/devsetup" && \
+chmod +x "${DEVSETUP_PREFIX}/bin/devsetup"
+
+echo -e "${COLOR_GREEN}\nInstallation successful"
+echo -e "${COLOR_DEFAULT}"
+devsetup --help
