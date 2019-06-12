@@ -87,6 +87,13 @@ print_version() {
   echo -e "devsetup ${VERSION}"
 }
 
+# sudo password
+###########################################################
+sudo_password() {
+    echo -e "[sudo] Enter password for ${USER}."
+    sudo -v
+}
+
 # Usage error
 ###########################################################
 usage_fatal() { print red false "${*}"; usage >&2; }
@@ -116,8 +123,9 @@ devsetup_update_devsetup() {
         exit 1
     fi
 
-    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup" && \
-    chmod +x "${DEVSETUP_PREFIX}/devsetup"
+    sudo_password
+    sudo curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup" && \
+    sudo chmod +x "${DEVSETUP_PREFIX}/devsetup"
 
     print green false "\nUpdate successful"
 }

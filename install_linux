@@ -29,7 +29,7 @@ if [[ $key != "" ]]; then
     exit 1
 fi
 
-echo -e "[sudo] Enter password for $USER to install devsetup!"
+echo -e "[sudo] Enter password for ${USER} to install devsetup!"
 sudo -v
 
 sudo curl -fsSL ${DEVSETUP_URL} -o "${DEVSETUP_PREFIX}/bin/devsetup" && \
