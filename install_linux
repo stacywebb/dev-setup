@@ -17,6 +17,8 @@ COLOR_GREEN="\033[92m"
 COLOR_YELLOW="\033[93m"
 COLOR_DEFAULT="\033[39m"
 
+set -e
+
 echo -e "${COLOR_YELLOW}\nThis script installs to ${DEVSETUP_PREFIX}/bin/devsetup\n"
 echo -e "${COLOR_DEFAULT}Press RETURN to continue or any other key to abort"
 
@@ -26,6 +28,9 @@ if [[ $key != "" ]]; then
     echo -e "${COLOR_DEFAULT}"
     exit 1
 fi
+
+echo -e "[sudo] Enter password for $USER to install devsetup."
+sudo -v
 
 curl -fsSL ${DEVSETUP_URL} -o "${DEVSETUP_PREFIX}/bin/devsetup" && \
 chmod +x "${DEVSETUP_PREFIX}/bin/devsetup"
