@@ -142,7 +142,7 @@ devsetup_install_homebrew() {
     print green frame "Homebrew installation successful\n"
 }
 
-# devsetup install git
+# devsetup config git
 ###########################################################
 devsetup_git_config() {
     print magenta frame "GIT configuration\n"
@@ -175,6 +175,8 @@ devsetup_git_config() {
     git config --global color.status.header "white normal bold"
 }
 
+# devsetup install git
+###########################################################
 devsetup_install_git() {
     homebrew_update
     brew install git
@@ -208,15 +210,12 @@ devsetup_install() {
     case ${@} in
         "homebrew")
             devsetup_install_homebrew
-            exit 0
             ;;
         "git")
             devsetup_install_git
-            exit 0
             ;;
         "bash")
             devsetup_install_bash
-            exit 0
             ;;
         ""|*)
             usage_install_fatal ${@}
@@ -247,7 +246,9 @@ devsetup_update() {
     case ${@} in
         "devsetup")
             devsetup_update_devsetup
-            exit 0
+            ;;
+        "git")
+            devsetup_git_config
             ;;
         ""|*)
             usage_update_fatal ${@}
