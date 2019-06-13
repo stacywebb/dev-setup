@@ -204,6 +204,29 @@ devsetup_install_bash() {
     print green frame "Bash installation successful\n"
 }
 
+# devsetup install bash tab completion
+###########################################################
+devsetup_install_bash_tab_completion() {
+    print yellow "[sudo] Enter password for ${USER}\n"
+    sudo -v
+
+    homebrew_update
+
+    print magenta "Install bash TAB completion 2\n"
+    brew install bash-completion@2
+
+    print magenta "Install Informative git-prompt\n"
+    brew install bash-git-prompt
+
+    print magenta "Install Docker-machine bash TAB completion\n"
+    sudo curl -L https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/completion/bash/docker-machine.bash -o /usr/local/etc/bash_completion.d/docker-machine
+
+    print magenta "Install Docker-compose bash TAB completion\n"
+    sudo curl -L https://raw.githubusercontent.com/docker/compose/1.24.0/contrib/completion/bash/docker-compose -o /usr/local/etc/bash_completion.d/docker-compose
+
+    print green frame "Bash TAB Completion installation successful\n"
+}
+
 # devsetup install
 ###########################################################
 devsetup_install() {
@@ -216,6 +239,9 @@ devsetup_install() {
             ;;
         "bash")
             devsetup_install_bash
+            ;;
+        "bash-tab-completion")
+            devsetup_install_bash_tab_completion
             ;;
         ""|*)
             usage_install_fatal ${@}
