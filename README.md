@@ -28,13 +28,23 @@ bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/
 
 ### macOS Packages
 
-To install a package: `devsetup install <package>`
+To install a package: `devsetup --install <package>`
+
+| macOS Package         | Description                                                                   |
+| ---                   | ---                                                                           |
+| `homebrew`            | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
+| `git`                 | Install and set-up git                                                        |
+| `bash`                | Install the latest version of Bash                                            |
+| `bash-tab-completion` | Install bash tab completion 2                                                 |
+
+### macOS update functions
+
+To update a package or configuration: `devsetup --update <package>`
 
 | macOS Package     | Description                                                                   |
 | ---               | ---                                                                           |
-| `homebrew`        | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
-| `git`             | Install and set-up git                                                        |
-| `bash`            | Install the latest version of Bash                                            |
+| `devsetup`        | Update devsetup script (download the latest version)                          |
+| `git`             | Set-up git with username, email, and terminal colors                          |
 
 ## Install devsetup for GNU/Linux
 
@@ -46,7 +56,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/
 
 ### GNU/Linux Packages
 
-To install a package: `devsetup install <package>`
+To install a package: `devsetup --install <package>`
 
 | GNU/Linux Package | Description                                                                   |
 | ---               | ---                                                                           |
