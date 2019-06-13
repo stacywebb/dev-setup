@@ -35,7 +35,7 @@ To install a package: `devsetup --install <package>`
 | `homebrew`            | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
 | `git`                 | Install and set-up git                                                        |
 | `bash`                | Install the latest version of Bash                                            |
-| `bash-tab-completion` | Install bash tab completion 2                                                 |
+| `bash-tab-completion` | Install bash tab completion 2, git-prompt, and docker tab completion          |
 
 ### macOS update functions
 

@@ -124,6 +124,11 @@ homebrew_update() {
 # devsetup install homebrew
 ###########################################################
 devsetup_install_homebrew() {
+    trap "exit 1" SIGINT # Process Interruption Ctrl-C
+
+    print yellow "[sudo] Enter password for ${USER}\n"
+    sudo -v
+
     print magenta "Installing the GNU Compiler Collection (GCC)\n"
     xcode-select --install
 
@@ -188,7 +193,10 @@ devsetup_install_git() {
 # devsetup install bash
 ###########################################################
 devsetup_install_bash() {
-    set -e
+    trap "exit 1" SIGINT # Process Interruption Ctrl-C
+
+    print yellow "[sudo] Enter password for ${USER}\n"
+    sudo -v
 
     homebrew_update
     brew install bash
@@ -207,6 +215,8 @@ devsetup_install_bash() {
 # devsetup install bash tab completion
 ###########################################################
 devsetup_install_bash_tab_completion() {
+    trap "exit 1" SIGINT # Process Interruption Ctrl-C
+
     print yellow "[sudo] Enter password for ${USER}\n"
     sudo -v
 
