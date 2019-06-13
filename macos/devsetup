@@ -35,10 +35,12 @@ usage_install() {
 cat <<EOF
     Usage: devsetup install [SCRIPT]
 
-    Script          Description
-    homebrew        Install homebrew package manager for macOS
-    git             Install and set-up git
-    bash            Install the latest version of Bash
+    Script              Description
+    homebrew            Install homebrew package manager for macOS
+    git                 Install and set-up git
+    bash                Install the latest version of Bash
+    bash-tab-completion Install bash tab completion 2
+    pyenv               Install multiple Python versions using 'pyenv'
 EOF
 }
 
@@ -237,6 +239,30 @@ devsetup_install_bash_tab_completion() {
     print green frame "Bash TAB Completion installation successful\n"
 }
 
+# devsetup install bash tab completion
+###########################################################
+devsetup_install_pyenv() {
+    homebrew_update
+
+    print magenta "Installing pyenv\n"
+    brew install pyenv
+
+    print magenta "Installing pyenv-virtualenvwrapper\n"
+    brew install pyenv-virtualenvwrapper
+
+    prnt magenta "Installing Python 2.7.15, 3.6.5, 3.7.3\n"
+    eval "$(pyenv init -)"
+    PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.15
+    PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.6.5
+    PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.7.3
+
+    print magenta "Setting up Python 3.6.5 as default\n"
+    pyenv global 3.6.5
+
+    print magenta "Setting up virtualenvwrapper\n"
+    pyenv virtualenvwrapper
+}
+
 # devsetup install
 ###########################################################
 devsetup_install() {
@@ -252,6 +278,9 @@ devsetup_install() {
             ;;
         "bash-tab-completion")
             devsetup_install_bash_tab_completion
+            ;;
+        "pyenv")
+            devsetup_install_pyenv
             ;;
         ""|*)
             usage_install_fatal ${@}

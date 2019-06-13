@@ -36,6 +36,7 @@ To install a package: `devsetup --install <package>`
 | `git`                 | Install and set-up git                                                        |
 | `bash`                | Install the latest version of Bash                                            |
 | `bash-tab-completion` | Install bash tab completion 2, git-prompt, and docker tab completion          |
+| `pyenv`               | Install multiple Python versions using 'pyenv': Python 2.7.15, 3.6.5, 3.7.3   |
 
 ### macOS update functions
 
