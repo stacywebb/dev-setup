@@ -76,7 +76,7 @@ print() {
 # Check Press RETURN to continue
 ###########################################################
 wait_for_user() {
-    echo -e "${COLOR_YELLOW}Press RETURN to continue or any other key to abort!"
+    print yellow "\nPress RETURN to continue or any other key to abort!\n"
 
     read -s -n 1 key
 
@@ -93,9 +93,9 @@ print_version() {
 
 # Usage error
 ###########################################################
-usage_fatal() { print red ${*}; usage >&2; }
-usage_install_fatal() { print red ${*}; usage_install >&2; }
-usage_update_fatal() { print red ${*}; usage_update >&2; }
+usage_fatal() { print red "devsetup: illegal option ${@}\n"; usage >&2; }
+usage_install_fatal() { print red "devsetup install: illegal option ${@}\n"; usage_install >&2; }
+usage_update_fatal() { print red "devsetup update: illegal option ${@}\n"; usage_update >&2; }
 
 # Check if Homebrew is installed
 ###########################################################
@@ -242,7 +242,7 @@ devsetup_install() {
             exit 0
             ;;
         ""|*)
-            usage_install_fatal "invalid installation command\n"
+            usage_install_fatal ${@}
             exit 1
             ;;
     esac
@@ -251,11 +251,14 @@ devsetup_install() {
 # devsetup update devsetup
 ###########################################################
 devsetup_update_devsetup() {
-    print yellow "This update installs 'devsetup' to ${DEVSETUP_PREFIX}\n"
+    print magenta "\nCurrent directory: "
+    print "`pwd`\n"
+    print magenta "This update installs 'devsetup' to: "
+    print "${DEVSETUP_PREFIX}\n"
 
     wait_for_user
 
-    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup" && \
+    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup"
     chmod +x "${DEVSETUP_PREFIX}/devsetup"
 
     print green "\nUpdate successful\n"
@@ -270,7 +273,7 @@ devsetup_update() {
             exit 0
             ;;
         ""|*)
-            usage_update_fatal "\ninvalid update command\n"
+            usage_update_fatal ${@}
             exit 1
             ;;
     esac
@@ -286,6 +289,7 @@ while [ "${#}" -gt 0 ]; do
             continue
             ;;
         -h|--help)
+            print_version
             usage
             exit 0
             ;;
@@ -304,7 +308,7 @@ while [ "${#}" -gt 0 ]; do
             exit 0
             ;;
         --|-*|*)
-            usage_fatal "\nunknown option: ${1}\n"
+            usage_fatal ${1}
             exit 1
             ;;
     esac
