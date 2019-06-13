@@ -86,14 +86,13 @@ print() {
 
 # Check Press RETURN to continue
 ###########################################################
-devsetup_continue() {
-    print default false "\nPress RETURN to continue or any other key to abort!\n"
+wait_for_user() {
+    echo -e "${COLOR_YELLOW}Press RETURN to continue or any other key to abort!"
+
     read -s -n 1 key
 
-    if [[ $key = "" ]]; then
-        true
-    else
-        false
+    if [[ ${key} != "" ]]; then
+        exit 0
     fi
 }
 
@@ -171,17 +170,11 @@ devsetup_git_config() {
     print green false "\nUser Name: ${GIT_USER_NAME}\n"
     print green false "E-mail: ${GIT_USER_EMAIL}\n"
 
-    if ! devsetup_continue; then
-        print red false "\ngit config aborted!\n"
-        return 1
-    fi
+    wait_for_user
 }
 
 devsetup_install_git() {
-    if ! devsetup_git_config; then
-        print red false "\ngit installation aborted!\n"
-        exit 1
-    fi
+    devsetup_git_config;
 
     print yellow true "Installing Git\n"
 
@@ -271,10 +264,7 @@ devsetup_install() {
 devsetup_update_devsetup() {
     print yellow false "This update installs to ${DEVSETUP_PREFIX}/devsetup\n"
 
-    if ! devsetup_continue; then
-        print red false "\nUpdate aborted!\n"
-        exit 1
-    fi
+    wait_for_user
 
     curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup" && \
     chmod +x "${DEVSETUP_PREFIX}/devsetup"
