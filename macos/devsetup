@@ -93,51 +93,49 @@ print_version() {
 
 # Usage error
 ###########################################################
-usage_fatal() { print red "devsetup: illegal option ${@}\n"; usage >&2; }
-usage_install_fatal() { print red "devsetup install: illegal option ${@}\n"; usage_install >&2; }
-usage_update_fatal() { print red "devsetup update: illegal option ${@}\n"; usage_update >&2; }
+usage_fatal() {
+    print red "devsetup: illegal option ${@}\n"
+    usage >&2
+}
 
-# Check if Homebrew is installed
+usage_install_fatal() {
+    print red "devsetup install: illegal option ${@}\n"
+    usage_install >&2
+}
+
+usage_update_fatal() {
+    print red "devsetup update: illegal option ${@}\n"
+    usage_update >&2
+}
+
+# Check if Homebrew is installed and update it
 ###########################################################
-is_homebrew_installed() {
-    if hash brew 2>/dev/null; then
-        true
-    else
-        false
-    fi
-}
-
 homebrew_update() {
-    print green "Homebrew is already installed - updating ...\n"
-    brew update
-}
-
-homebrew_not_installed() {
-    print red "\nHomebrew is not installed! Install it with:\n"
-    print yellow "\ndesetup --install homebrew\n"
+    if hash brew 2>/dev/null; then
+        print green "Homebrew is already installed - updating ...\n"
+        brew update
+    else
+        print red "Homebrew is not installed! Install it with: "
+        print "desetup --install homebrew\n"
+        exit 1
+    fi
 }
 
 # devsetup install homebrew
 ###########################################################
 devsetup_install_homebrew() {
-    print yellow frame "Starting Homebrew installation\n"
-
-    # Installing GCC
-    print yellow "Installing the GNU Compiler Collection (GCC)\n"
-
-    # Install the Command Line Tools package
+    print magenta "Installing the GNU Compiler Collection (GCC)\n"
     xcode-select --install
 
-    # Install the additional SDK headers
+    print magenta "Installing Command Line Tools additional headers\n"
     sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 
-    # Installing Homebrew
-    print yellow "Installing Homebrew\n"
-
-    if is_homebrew_installed; then
-        homebrew_update
+    if hash brew 2>/dev/null; then
+        print green "Homebrew is already installed - updating ...\n"
+        brew update
         brew upgrade
     else
+        print magenta "Installing Homebrew\n"
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
@@ -147,44 +145,27 @@ devsetup_install_homebrew() {
 # devsetup install git
 ###########################################################
 devsetup_git_config() {
-    print yellow frame "GIT Setup\n"
+    print magenta frame "GIT configuration\n"
 
-    print magenta "git config --global user.name: "
+    print yellow "git config --global user.name \"Your name\": "
     read GIT_USER_NAME
 
-    print magenta "git config --global user.email: "
+    print yellow "git config --global user.email \"your@email.com\": "
     read GIT_USER_EMAIL
 
     # Confirm user input
-    print green "\nUser Name: ${GIT_USER_NAME}\n"
-    print green "E-mail: ${GIT_USER_EMAIL}\n"
+    print magenta "\nUser Name: "
+    print "${GIT_USER_NAME}\n"
+    print magenta "E-mail: "
+    print "${GIT_USER_EMAIL}\n"
 
     wait_for_user
-}
 
-devsetup_install_git() {
-    devsetup_git_config;
-
-    print yellow frame "Installing Git\n"
-
-    if is_homebrew_installed; then
-        homebrew_update
-    else
-        homebrew_not_installed
-        exit 1
-    fi
-
-    # Install Git
-    brew install git
-
-    # Configure Git
-    print yellow "\nConfigure Git\n"
-
-    # User name and email
+    # Set git user name and email
     git config --global user.name "${GIT_USER_NAME}"
     git config --global user.email "${GIT_USER_EMAIL}"
 
-    # Set Git terminal colors
+    # Set git terminal colors
     git config --global color.ui true
     git config --global color.status.changed "blue normal"
     git config --global color.status.untracked "red normal"
@@ -192,6 +173,12 @@ devsetup_install_git() {
     git config --global color.status.updated "green normal"
     git config --global color.status.branch "yellow normal bold"
     git config --global color.status.header "white normal bold"
+}
+
+devsetup_install_git() {
+    homebrew_update
+    brew install git
+    devsetup_git_config
 
     print green frame "Git installation successful\n"
 }
@@ -201,25 +188,15 @@ devsetup_install_git() {
 devsetup_install_bash() {
     set -e
 
-    print yellow frame "Updating bash\n"
-
-    if is_homebrew_installed; then
-        homebrew_update
-    else
-        homebrew_not_installed
-        exit 1
-    fi
-
-    # Install the latest version of Bash
+    homebrew_update
     brew install bash
 
-    # Add the new shell to the list of allowed shells
     if [[ `cat /etc/shells | grep '/usr/local/bin/bash'` = "" ]]; then
+        print magenta "Adding the new shell to the list of allowed shells\n"
         sudo bash -c 'echo /usr/local/bin/bash >> /etc/shells'
-        # Change to the new shell
+
+        print magenta "Changing to the new shell\n"
         chsh -s /usr/local/bin/bash
-    else
-        bash --version
     fi
 
     print green frame "Bash installation successful\n"
