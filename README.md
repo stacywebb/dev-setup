@@ -51,12 +51,13 @@ To install a package: `devsetup --install <package>`
 
 To update a package or configuration: `devsetup --update <package>`
 
-| macOS Package     | Description                                                                   |
-| ---               | ---                                                                           |
-| `devsetup`        | Update devsetup script (download the latest version)                          |
-| `git`             | Set-up git with username, email, and terminal colors                          |
-| `bash-profile`    | Set-up bash_profile                                                           |
-| `inputrc`         | Improve command line history search                                           |
+| macOS Package     | Description                                                                           s|
+| ---               | ---                                                                                   |
+| `devsetup`        | Update devsetup script (download the latest version)                                  |
+| `git`             | Set-up git with username, email, and terminal colors                                  |
+| `bash-profile`    | Set-up bash_profile                                                                   |
+| `inputrc`         | Improve command line history search                                                   |
+| `vscode`          | Setup Visual Studio Code and install extensions (check `macos/vs-code-settings.json`) |
 
 ## Install devsetup for GNU/Linux
 

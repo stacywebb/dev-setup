@@ -4,7 +4,7 @@
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-VERSION="0.0.7"
+VERSION="0.0.8"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX="/usr/local"
 
@@ -51,9 +51,10 @@ cat <<EOF
 
     Script          Description
     devsetup        Update devsetup
-    git             Set-up git with username, email, and terminal colors
-    bash-profile    Set-up bash_profile
+    git             Setup git with username, email, and terminal colors
+    bash-profile    Setup bash_profile
     inputrc         Improve command line history search
+    vscode          Setup Visual Studio Code and install extensions
 EOF
 }
 
@@ -591,6 +592,7 @@ devsetup_install_all() {
     devsetup_install_opencv
     devsetup_bash_profile_config
     devsetup_inputrc_config
+    devsetup_vscode_config
 }
 
 devsetup_update_devsetup() {
@@ -625,6 +627,98 @@ devsetup_bash_profile_config() {
 devsetup_inputrc_config() {
     echo "${INPUTRC}" > ${HOME}/.inputrc
     print green frame "~/.inputrc configured successful\n"
+}
+
+devsetup_vscode_config() {
+    if ! command -v code 1>/dev/null 2>&1; then
+        print red "Visual Studio Code is not installed! Install it: "
+        print "https://code.visualstudio.com\n"
+        exit 1
+    fi
+
+    print magenta "Installing Visual Studio Code extensions\n"
+    # Code extensions list
+    # code --list-extensions | xargs -L 1 echo code --install-extension
+    code --install-extension aaron-bond.better-comments
+    code --install-extension adamvoss.vscode-languagetool
+    code --install-extension adamvoss.vscode-languagetool-en
+    code --install-extension adamvoss.vscode-languagetool-fr
+    code --install-extension alefragnani.project-manager
+    code --install-extension apedroed.Happy-Flasker
+    code --install-extension bierner.markdown-preview-github-styles
+    code --install-extension christian-kohler.npm-intellisense
+    code --install-extension christian-kohler.path-intellisense
+    code --install-extension codezombiech.gitignore
+    code --install-extension CoenraadS.bracket-pair-colorizer
+    code --install-extension cstrap.flask-snippets
+    code --install-extension DavidAnson.vscode-markdownlint
+    code --install-extension dbaeumer.jshint
+    code --install-extension dbaeumer.vscode-eslint
+    code --install-extension donjayamanne.git-extension-pack
+    code --install-extension donjayamanne.githistory
+    code --install-extension donjayamanne.jquerysnippets
+    code --install-extension DotJoshJohnson.xml
+    code --install-extension eamodio.gitlens
+    code --install-extension ecmel.vscode-html-css
+    code --install-extension eg2.vscode-npm-script
+    code --install-extension eriklynd.json-tools
+    code --install-extension esbenp.prettier-vscode
+    code --install-extension formulahendry.auto-close-tag
+    code --install-extension formulahendry.code-runner
+    code --install-extension HookyQR.beautify
+    code --install-extension humao.rest-client
+    code --install-extension ionutvmi.path-autocomplete
+    code --install-extension James-Yu.latex-workshop
+    code --install-extension jithurjacob.nbpreviewer
+    code --install-extension joelday.docthis
+    code --install-extension kisstkondoros.vscode-codemetrics
+    code --install-extension kumar-harsh.graphql-for-vscode
+    code --install-extension mikestead.dotenv
+    code --install-extension ms-python.python
+    code --install-extension ms-vscode.cpptools
+    code --install-extension ms-vscode.Go
+    code --install-extension ms-vsliveshare.vsliveshare
+    code --install-extension ms-vsliveshare.vsliveshare-audio
+    code --install-extension msjsdiag.debugger-for-chrome
+    code --install-extension msjsdiag.vscode-react-native
+    code --install-extension njpwerner.autodocstring
+    code --install-extension nodesource.vscode-for-node-js-development-pack
+    code --install-extension PeterJausovec.vscode-docker
+    code --install-extension quicktype.quicktype
+    code --install-extension redhat.java
+    code --install-extension redhat.vscode-yaml
+    code --install-extension ritwickdey.LiveServer
+    code --install-extension shd101wyy.markdown-preview-enhanced
+    code --install-extension SirTori.indenticator
+    code --install-extension timothymclane.react-redux-es6-snippets
+    code --install-extension twxs.cmake
+    code --install-extension vector-of-bool.cmake-tools
+    code --install-extension vscode-icons-team.vscode-icons
+    code --install-extension waderyan.gitblame
+    code --install-extension wayou.vscode-todo-highlight
+    code --install-extension wholroyd.jinja
+    code --install-extension wix.vscode-import-cost
+    code --install-extension xabikos.JavaScriptSnippets
+    code --install-extension yzane.markdown-pdf
+    code --install-extension yzhang.markdown-all-in-one
+    code --install-extension Zignd.html-css-class-completion
+    code --install-extension ziyasal.vscode-open-in-github
+
+    if command -v git 1>/dev/null 2>&1; then
+        print magenta "Configuring vscode as default git editor\n"
+        git config --global core.editor 'code --wait'
+
+        print magenta "Configuring vscode as default git diff tool\n"
+        git config --global diff.tool vscode
+        git config --global difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
+    else
+        print red "\nGit is not installed!\n"
+        print magenta "Install it with: "
+        print "devsetup --install git\n"
+        print yellow "\nRun this installation again to setup git and vscode!\n\n"
+    fi
+
+    print green frame "Visual Studio Code configured successful\n"
 }
 
 # Parse devsetup --install options
@@ -685,6 +779,9 @@ devsetup_update() {
             ;;
         "inputrc")
             devsetup_inputrc_config
+            ;;
+        "vscode")
+            devsetup_vscode_config
             ;;
         ""|*)
             usage_update_fatal ${@}
