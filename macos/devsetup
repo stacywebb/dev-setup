@@ -15,8 +15,6 @@ blue="\033[94m"
 magenta="\033[95m"
 resetcolor="\033[39m"
 
-# devsetup usage
-###########################################################
 usage() {
 cat <<EOF
     Usage: devsetup [OPTIONS]
@@ -29,8 +27,6 @@ cat <<EOF
 EOF
 }
 
-# devsetup install usage
-###########################################################
 usage_install() {
 cat <<EOF
     Usage: devsetup install [SCRIPT]
@@ -44,8 +40,6 @@ cat <<EOF
 EOF
 }
 
-# devsetup update usage
-###########################################################
 usage_update() {
 cat <<EOF
     Usage: devsetup update [SCRIPT]
@@ -146,8 +140,7 @@ set completion-ignore-case on
 TAB: menu-complete
 EOF
 
-# Print formated message: print <color> <frame> "message"
-###########################################################
+# Print a formated message: print <color> <frame> "message"
 print() {
     case ${#} in
         "1") COLOR=resetcolor; FRAME=false; MSG=${1} ;;
@@ -166,8 +159,6 @@ print() {
     printf ${resetcolor}
 }
 
-# Check Press RETURN to continue
-###########################################################
 wait_for_user() {
     print yellow "\nPress RETURN to continue or any other key to abort!\n"
 
@@ -178,14 +169,10 @@ wait_for_user() {
     fi
 }
 
-# Print the version number of devsetup script
-###########################################################
 print_version() {
   print "devsetup ${VERSION}\n"
 }
 
-# Usage error
-###########################################################
 usage_fatal() {
     print red "devsetup: illegal option ${@}\n"
     usage >&2
@@ -202,7 +189,6 @@ usage_update_fatal() {
 }
 
 # Check if Homebrew is installed and update it
-###########################################################
 homebrew_update() {
     if hash brew 2>/dev/null; then
         print green "Homebrew is already installed - updating ...\n"
@@ -214,8 +200,6 @@ homebrew_update() {
     fi
 }
 
-# devsetup install homebrew
-###########################################################
 devsetup_install_homebrew() {
     trap "exit 1" SIGINT # Process Interruption Ctrl-C
 
@@ -240,8 +224,6 @@ devsetup_install_homebrew() {
     print green frame "Homebrew installation successful\n"
 }
 
-# devsetup config git
-###########################################################
 devsetup_git_config() {
     print magenta frame "GIT configuration\n"
 
@@ -273,8 +255,6 @@ devsetup_git_config() {
     git config --global color.status.header "white normal bold"
 }
 
-# devsetup install git
-###########################################################
 devsetup_install_git() {
     homebrew_update
     brew install git
@@ -283,8 +263,6 @@ devsetup_install_git() {
     print green frame "Git installation successful\n"
 }
 
-# devsetup install bash
-###########################################################
 devsetup_install_bash() {
     trap "exit 1" SIGINT # Process Interruption Ctrl-C
 
@@ -305,8 +283,6 @@ devsetup_install_bash() {
     print green frame "Bash installation successful\n"
 }
 
-# devsetup install bash tab completion
-###########################################################
 devsetup_install_bash_tab_completion() {
     trap "exit 1" SIGINT # Process Interruption Ctrl-C
 
@@ -330,8 +306,6 @@ devsetup_install_bash_tab_completion() {
     print green frame "Bash TAB Completion installation successful\n"
 }
 
-# devsetup install bash tab completion
-###########################################################
 devsetup_install_pyenv() {
     homebrew_update
 
@@ -356,8 +330,41 @@ devsetup_install_pyenv() {
     print green frame "pyenv installation successful\n"
 }
 
-# devsetup install
-###########################################################
+devsetup_update_devsetup() {
+    print magenta "\nCurrent directory: "
+    print "`pwd`\n"
+    print magenta "This update installs 'devsetup' to: "
+    print "${DEVSETUP_PREFIX}\n"
+
+    wait_for_user
+
+    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup"
+    chmod +x "${DEVSETUP_PREFIX}/devsetup"
+
+    print green "\nUpdate successful\n"
+}
+
+devsetup_bash_profile_config() {
+    if [[ -f ~/.bash_profile ]]; then
+        print red "\nThis script will create/overwrite .bash_profile file!\n"
+        print magenta "\nA backup will be available: "
+        print "~/.bash_profile.bkp\n"
+
+        wait_for_user
+
+        cp ~/.bash_profile ~/.bash_profile.bkp
+    fi
+
+    echo "${BASH_PROFILE}" > ${HOME}/.bash_profile
+    print green frame "~/.bash_profile configured successful\n"
+}
+
+devsetup_inputrc_config() {
+    echo "${INPUTRC}" > ${HOME}/.inputrc
+    print green frame "~/.inputrc configured successful\n"
+}
+
+# Parse devsetup --install options
 devsetup_install() {
     case ${@} in
         "homebrew")
@@ -382,48 +389,7 @@ devsetup_install() {
     esac
 }
 
-# devsetup update devsetup
-###########################################################
-devsetup_update_devsetup() {
-    print magenta "\nCurrent directory: "
-    print "`pwd`\n"
-    print magenta "This update installs 'devsetup' to: "
-    print "${DEVSETUP_PREFIX}\n"
-
-    wait_for_user
-
-    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup"
-    chmod +x "${DEVSETUP_PREFIX}/devsetup"
-
-    print green "\nUpdate successful\n"
-}
-
-# devsetup update bash_profile
-###########################################################
-devsetup_bash_profile_config() {
-    if [[ -f ~/.bash_profile ]]; then
-        print red "\nThis script will create/overwrite .bash_profile file!\n"
-        print magenta "\nA backup will be available: "
-        print "~/.bash_profile.bkp\n"
-
-        wait_for_user
-
-        cp ~/.bash_profile ~/.bash_profile.bkp
-    fi
-
-    echo "${BASH_PROFILE}" > ${HOME}/.bash_profile
-    print green frame "~/.bash_profile configured successful\n"
-}
-
-# devsetup update inputrc
-###########################################################
-devsetup_inputrc_config() {
-    echo "${INPUTRC}" > ${HOME}/.inputrc
-    print green frame "~/.inputrc configured successful\n"
-}
-
-# devsetup update
-###########################################################
+# Parse devsetup --update options
 devsetup_update() {
     case ${@} in
         "devsetup")
@@ -445,8 +411,7 @@ devsetup_update() {
     esac
 }
 
-# Parse options
-###########################################################
+# Parse devsetup options
 while [ "${#}" -gt 0 ]; do
     case ${1} in
         --*'='*)
