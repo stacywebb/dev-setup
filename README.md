@@ -37,11 +37,12 @@ To install a package: `devsetup --install <package>`
 | macOS Package         | Description                                                                   |
 | ---                   | ---                                                                           |
 | `homebrew`            | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
-| `git`                 | Install and setup git                                                        |
+| `git`                 | Install and setup git                                                         |
 | `bash`                | Install the latest version of Bash                                            |
 | `bash-tab-completion` | Install bash tab completion 2, git-prompt, and docker tab completion          |
 | `pyenv`               | Install multiple Python versions using 'pyenv': Python 2.7.15, 3.6.5, 3.7.3   |
-| `all`                 | Install all the packages                                                          |
+| `pylibs`              | Install Python Libraries: TensorFlow, Keras, scientific libraires             |
+| `all`                 | Install all the packages                                                      |
 
 ### macOS update functions
 

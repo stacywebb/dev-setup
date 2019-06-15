@@ -4,7 +4,7 @@
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-VERSION="0.0.3"
+VERSION="0.0.4"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX=$(dirname $0)
 
@@ -37,6 +37,7 @@ cat <<EOF
     bash                Install the latest version of Bash
     bash-tab-completion Install bash tab completion 2
     pyenv               Install multiple Python versions using 'pyenv'
+    pylibs              Install Python Libraries: TensorFlow, Keras, scientific libraires
     all                 Install all the packages
 EOF
 }
@@ -215,7 +216,7 @@ homebrew_update() {
         brew update
     else
         print red "Homebrew is not installed! Install it with: "
-        print "desetup --install homebrew\n"
+        print "devsetup --install homebrew\n"
         exit 1
     fi
 }
@@ -324,7 +325,7 @@ devsetup_install_pyenv() {
     print magenta "Installing pyenv-virtualenvwrapper\n"
     brew install pyenv-virtualenvwrapper
 
-    prnt magenta "Installing Python 2.7.15, 3.6.5, 3.7.3\n"
+    print magenta "Installing Python 2.7.15, 3.6.5, 3.7.3\n"
     eval "$(pyenv init -)"
     PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.15
     PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.6.5
@@ -337,6 +338,72 @@ devsetup_install_pyenv() {
     pyenv virtualenvwrapper
 
     print green frame "pyenv installation successful\n"
+}
+
+devsetup_install_python_libraries() {
+    print magenta frame "Install Python libraries dependencies\n"
+    homebrew_update
+
+    # Install Graphviz - Keras dependency
+    brew install Graphviz
+
+    # Install node - Jupyterlab extensions dependency
+    brew install node
+
+    print magenta frame "Create a python virtual environment 'py365'\n"
+
+    # Check Pyenv - Python installation management
+    if command -v pyenv 1>/dev/null 2>&1; then
+        eval "$(pyenv init -)"
+        pyenv shell 3.6.5
+        pyenv virtualenvwrapper
+        mkvirtualenv py365 # Create virtual environment 'py365'
+    else
+        print red "Pyenv is not installed! Install it with: "
+        print "devsetup --install pyenv\n"
+        exit 1
+    fi
+
+    print magenta frame "Install Python libraries\n"
+    workon py365
+    pip install --no-cache-dir --upgrade pip
+
+    # TensorFlow
+    pip install --no-cache-dir --upgrade tensorflow
+
+    # Keras
+    pip install --no-cache-dir --upgrade \
+        h5py \
+        pydot \
+        keras
+
+    # Scientific libraires
+    pip install --no-cache-dir  --upgrade \
+        pandas \
+        scipy \
+        pillow \
+        scikit-learn \
+        scikit-image \
+        sk-video
+
+    # Basic libraries
+    pip install --no-cache-dir --upgrade \
+        progressbar2 \
+        requests \
+        Cython \
+        pylint \
+        autopep8 \
+        pytest \
+        pydocstyle
+
+    # Matplotlib
+    pip install --no-cache-dir --upgrade \
+        ipympl \
+        matplotlib
+
+    # Fix Matplotlib backend
+    mkdir -p ~/.config/matplotlib
+    echo "backend : TkAgg" > ~/.config/matplotlib/matplotlibrc
 }
 
 devsetup_install_all() {
@@ -358,6 +425,7 @@ devsetup_install_all() {
     devsetup_install_bash
     devsetup_install_bash_tab_completion
     devsetup_install_pyenv
+    devsetup_install_python_libraries
     devsetup_bash_profile_config
     devsetup_inputrc_config
 }
@@ -415,6 +483,9 @@ devsetup_install() {
             ;;
         "pyenv")
             devsetup_install_pyenv
+            ;;
+        "pylibs")
+            devsetup_install_python_libraries
             ;;
         "all")
             devsetup_install_all
