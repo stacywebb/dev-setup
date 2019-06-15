@@ -26,7 +26,7 @@ To install devsetup for macOS to `/usr/local`, paste at a terminal prompt:
 bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/install_macos)
 ```
 
-macOS terminal with devsetup `.bash_profile` and `.inputrc`
+My personal theme for Terminal.app `macOS.terminal` is available inside the `macos` folder!
 
 ![macOS terminal](./macos/macos_terminal.gif?raw=true)
 
