@@ -42,6 +42,7 @@ To install a package: `devsetup --install <package>`
 | `bash-tab-completion` | Install bash tab completion 2, git-prompt, and docker tab completion          |
 | `pyenv`               | Install multiple Python versions using 'pyenv': Python 2.7.15, 3.6.5, 3.7.3   |
 | `pylibs`              | Install Python Libraries: TensorFlow, Keras, scientific libraires             |
+| `jupyterlab`          | Install Jupyterlab with extensions: toc, git, matplotlib                      |
 | `all`                 | Install all the packages                                                      |
 
 ### macOS update functions

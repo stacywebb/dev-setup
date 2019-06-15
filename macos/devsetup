@@ -4,7 +4,7 @@
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-VERSION="0.0.4"
+VERSION="0.0.5"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX=$(dirname $0)
 
@@ -38,6 +38,7 @@ cat <<EOF
     bash-tab-completion Install bash tab completion 2
     pyenv               Install multiple Python versions using 'pyenv'
     pylibs              Install Python Libraries: TensorFlow, Keras, scientific libraires
+    jupyterlab          Install Jupyterlab with extensions: toc, git, matplotlib
     all                 Install all the packages
 EOF
 }
@@ -340,6 +341,20 @@ devsetup_install_pyenv() {
     print green frame "pyenv installation successful\n"
 }
 
+workon_virtual_environment_py365() {
+    # Check Pyenv - Python installation management
+    if command -v pyenv 1>/dev/null 2>&1; then
+        eval "$(pyenv init -)"
+        pyenv shell 3.6.5
+        pyenv virtualenvwrapper
+        mkvirtualenv py365 # Workon/Create virtual environment 'py365'
+    else
+        print red "Pyenv is not installed! Install it with: "
+        print "devsetup --install pyenv\n"
+        exit 1
+    fi
+}
+
 devsetup_install_python_libraries() {
     print magenta frame "Install Python libraries dependencies\n"
     homebrew_update
@@ -347,22 +362,8 @@ devsetup_install_python_libraries() {
     # Install Graphviz - Keras dependency
     brew install Graphviz
 
-    # Install node - Jupyterlab extensions dependency
-    brew install node
-
     print magenta frame "Create a python virtual environment 'py365'\n"
-
-    # Check Pyenv - Python installation management
-    if command -v pyenv 1>/dev/null 2>&1; then
-        eval "$(pyenv init -)"
-        pyenv shell 3.6.5
-        pyenv virtualenvwrapper
-        mkvirtualenv py365 # Create virtual environment 'py365'
-    else
-        print red "Pyenv is not installed! Install it with: "
-        print "devsetup --install pyenv\n"
-        exit 1
-    fi
+    workon_virtual_environment_py365
 
     print magenta frame "Install Python libraries\n"
     workon py365
@@ -404,6 +405,37 @@ devsetup_install_python_libraries() {
     # Fix Matplotlib backend
     mkdir -p ~/.config/matplotlib
     echo "backend : TkAgg" > ~/.config/matplotlib/matplotlibrc
+
+    print green frame "Python libraries installation successful\n"
+}
+
+devsetup_install_jupyterlab() {
+    print magenta frame "Install Jupyterlab\n"
+
+    workon_virtual_environment_py365
+    workon py365
+    pip install --no-cache-dir --upgrade \
+        pip \
+        jupyterlab \
+        jupyterlab-git
+
+    print magenta frame "Install Jupyterlab extensions (Require Node.js)\n"
+    homebrew_update
+    brew install node # Jupyterlab extensions dependency
+    workon py365
+
+    jupyter labextension install @jupyterlab/toc
+    jupyter labextension install @jupyterlab/git
+    jupyter serverextension enable --py jupyterlab_git
+
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager
+    jupyter labextension install jupyter-matplotlib
+
+    # Cleanup
+    print magenta frame "Cleanup - removing temporary files\n"
+    npm cache clean --force
+
+    print green frame "Jupyterlab installation successful\n"
 }
 
 devsetup_install_all() {
@@ -426,6 +458,7 @@ devsetup_install_all() {
     devsetup_install_bash_tab_completion
     devsetup_install_pyenv
     devsetup_install_python_libraries
+    devsetup_install_jupyterlab
     devsetup_bash_profile_config
     devsetup_inputrc_config
 }
@@ -486,6 +519,9 @@ devsetup_install() {
             ;;
         "pylibs")
             devsetup_install_python_libraries
+            ;;
+        "jupyterlab")
+            devsetup_install_jupyterlab
             ;;
         "all")
             devsetup_install_all
