@@ -8,28 +8,36 @@
 # To install elsewhere you can clone the project
 #   git clone https://github.com/marcosgomesborges/dev-setup
 ###########################################################
-INSTALL_VERSION="0.0.1"
+INSTALL_VERSION="0.0.2"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
-DEVSETUP_PREFIX="/usr/local"
+DEVSETUP_PREFIX="/usr/local/bin"
 
-COLOR_RED="\033[91m"
-COLOR_GREEN="\033[92m"
-COLOR_YELLOW="\033[93m"
-COLOR_DEFAULT="\033[39m"
+red="\033[91m"
+green="\033[92m"
+yellow="\033[93m"
+blue="\033[94m"
+magenta="\033[95m"
+nc="\033[39m"
 
-echo -e "${COLOR_YELLOW}\nThis script installs to ${DEVSETUP_PREFIX}/bin/devsetup\n"
-echo -e "${COLOR_DEFAULT}Press RETURN to continue or any other key to abort"
+wait_for_user() {
+    printf "${yellow}\nPress RETURN to continue or any other key to abort!\n${nc}"
 
-read -s -n 1 key
-if [[ $key != "" ]]; then
-    echo -e "${COLOR_RED}\nInstallation aborted!"
-    echo -e "${COLOR_DEFAULT}"
-    exit 1
-fi
+    read -s -n 1 key
+    if [[ ${key} != "" ]]; then
+        printf "${red}\nInstallation aborted!${nc}"
+        exit 1
+    fi
+}
 
-curl -fsSL ${DEVSETUP_URL} -o "${DEVSETUP_PREFIX}/bin/devsetup" && \
-chmod +x "${DEVSETUP_PREFIX}/bin/devsetup"
+printf "${magenta}\nCurrent directory: ${nc}"
+printf "`pwd`\n"
+printf "${magenta}This script installs 'devsetup' to: ${nc}"
+printf "${DEVSETUP_PREFIX}\n"
 
-echo -e "${COLOR_GREEN}\nInstallation successful"
-echo -e "${COLOR_DEFAULT}"
+wait_for_user
+
+curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup"
+chmod +x "${DEVSETUP_PREFIX}/devsetup"
+
+printf "${green}\nUpdate successful\n\n${nc}"
 devsetup --help

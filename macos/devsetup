@@ -4,7 +4,7 @@
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-VERSION="0.0.2"
+VERSION="0.0.3"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX=$(dirname $0)
 
@@ -13,7 +13,7 @@ green="\033[92m"
 yellow="\033[93m"
 blue="\033[94m"
 magenta="\033[95m"
-resetcolor="\033[39m"
+nc="\033[39m"
 
 usage() {
 cat <<EOF
@@ -144,7 +144,7 @@ EOF
 # Print a formated message: print <color> <frame> "message"
 print() {
     case ${#} in
-        "1") COLOR=resetcolor; FRAME=false; MSG=${1} ;;
+        "1") COLOR=nc; FRAME=false; MSG=${1} ;;
         "2") COLOR=${1}; FRAME=false; MSG=${2} ;;
         "3") COLOR=${1}; FRAME=${2}; MSG=${3} ;;
     esac
@@ -157,14 +157,13 @@ print() {
         printf "${!COLOR}${MSG}"
     fi
 
-    printf ${resetcolor}
+    printf ${nc}
 }
 
 wait_for_user() {
     print yellow "\nPress RETURN to continue or any other key to abort!\n"
 
     read -s -n 1 key
-
     if [[ ${key} != "" ]]; then
         exit 0
     fi
