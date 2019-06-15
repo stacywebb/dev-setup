@@ -8,9 +8,9 @@
 # To install elsewhere you can clone the project
 #   git clone https://github.com/marcosgomesborges/dev-setup
 ###########################################################
-INSTALL_VERSION="0.0.2"
+INSTALL_VERSION="0.0.3"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
-DEVSETUP_PREFIX="/usr/local/bin"
+DEVSETUP_PREFIX="/usr/local"
 
 red="\033[91m"
 green="\033[92m"
@@ -29,15 +29,37 @@ wait_for_user() {
     fi
 }
 
+wait_for_sudo() {
+    trap "exit 1" SIGINT # Process Interruption Ctrl-C
+    sudo -K # Force sudo ask for a root password
+
+    printf "${yellow}\n[sudo] Enter password for ${USER}\n${nc}"
+    sudo -v
+
+    # Abort if no sudo privileges
+    if ! sudo -vn 2>/dev/null; then
+        printf "${red}Aborted: ${nc}"
+        printf "this script needs sudo privileges!\n"
+        exit 1
+    fi
+}
+
 printf "${magenta}\nCurrent directory: ${nc}"
 printf "`pwd`\n"
 printf "${magenta}This script installs 'devsetup' to: ${nc}"
 printf "${DEVSETUP_PREFIX}\n"
 
 wait_for_user
+wait_for_sudo
 
-curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup"
-chmod +x "${DEVSETUP_PREFIX}/devsetup"
+sudo mkdir -p "${DEVSETUP_PREFIX}/DevSetup"
+sudo chown ${USER}:"admin" "${DEVSETUP_PREFIX}/DevSetup"
+mkdir "${DEVSETUP_PREFIX}/DevSetup/bin"
 
-printf "${green}\nUpdate successful\n\n${nc}"
+curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup"
+chmod +x "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup"
+
+ln -s "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup" "/usr/local/bin"
+
+printf "${green}\Installation successful\n\n${nc}"
 devsetup --help

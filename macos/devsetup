@@ -4,10 +4,9 @@
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-VERSION="0.0.6"
+VERSION="0.0.7"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
-DEVSETUP_PREFIX=$(dirname $0)
-DEVSETUP_PREFIX2="/usr/local"
+DEVSETUP_PREFIX="/usr/local"
 
 red="\033[91m"
 green="\033[92m"
@@ -467,19 +466,13 @@ devsetup_install_opencv() {
     devsetup_install_ffmpeg
 
     print magenta "DOWNLOADING OpenCV files\n"
-    # TO REMOVE : fix devsetup installation at /usr/local/DevSetup/
-    wait_for_sudo
-    sudo mkdir -p "${DEVSETUP_PREFIX2}/DevSetup"
-    sudo chown ${USER}:"admin" "${DEVSETUP_PREFIX2}/DevSetup"
-    # END TO REMOVE
-
-    mkdir -p "${DEVSETUP_PREFIX2}/DevSetup/OpenCV"
-    cd "${DEVSETUP_PREFIX2}/DevSetup/OpenCV"
+    mkdir -p "${DEVSETUP_PREFIX}/DevSetup/OpenCV"
+    cd "${DEVSETUP_PREFIX}/DevSetup/OpenCV"
 
     if [[ -e "opencv.tar.gz" && -e "opencv_contrib.tar.gz" ]]; then
         print magenta "Using local files: \n"
-        print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv.tar.gz\n"
-        print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv_contrib.tar.gz\n"
+        print "${DEVSETUP_PREFIX}/DevSetup/OpenCV/opencv.tar.gz\n"
+        print "${DEVSETUP_PREFIX}/DevSetup/OpenCV/opencv_contrib.tar.gz\n"
     else
         curl -L ${OPENCV_URL} -o "opencv.tar.gz"
         curl -L ${OPENCV_CONTRIB_URL} -o "opencv_contrib.tar.gz"
@@ -557,16 +550,16 @@ devsetup_install_opencv() {
     sudo make -j"$(nproc)" install
 
     print magenta "Removing local files: \n"
-    print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv.tar.gz\n"
-    print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv_contrib.tar.gz\n\n"
-    cd "${DEVSETUP_PREFIX2}/DevSetup/OpenCV"
+    print "${DEVSETUP_PREFIX}/DevSetup/OpenCV/opencv.tar.gz\n"
+    print "${DEVSETUP_PREFIX}/DevSetup/OpenCV/opencv_contrib.tar.gz\n\n"
+    cd "${DEVSETUP_PREFIX}/DevSetup/OpenCV"
     rm opencv.tar.gz
     rm opencv_contrib.tar.gz
 
     print yellow frame "# Symlink OpenCV to a new virtual environment\n"
     print yellow "Copy and past the following commands:\n\n"
     print blue "workon <virtual_environment>\n"
-    print blue "opencv_lib=\"${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv/build/lib/python3/*.so\"\n"
+    print blue "opencv_lib=\"${DEVSETUP_PREFIX}/DevSetup/OpenCV/opencv/build/lib/python3/*.so\"\n"
     print blue "site_packages=\`python3 -c \"import distutils.sysconfig as s; print(s.get_python_lib())\"\`\n"
     print blue "ln -s \$\{opencv_lib\} \$\{site_packages\}\n\n"
 
@@ -608,8 +601,8 @@ devsetup_update_devsetup() {
 
     wait_for_user
 
-    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/devsetup"
-    chmod +x "${DEVSETUP_PREFIX}/devsetup"
+    curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup"
+    chmod +x "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup"
 
     print green "\nUpdate successful\n"
 }
