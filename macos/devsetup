@@ -4,9 +4,10 @@
 #
 # Copyright (c) Marcos Gomes-Borges
 ###########################################################
-VERSION="0.0.5"
+VERSION="0.0.6"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX=$(dirname $0)
+DEVSETUP_PREFIX2="/usr/local"
 
 red="\033[91m"
 green="\033[92m"
@@ -39,6 +40,8 @@ cat <<EOF
     pyenv               Install multiple Python versions using 'pyenv'
     pylibs              Install Python Libraries: TensorFlow, Keras, scientific libraires
     jupyterlab          Install Jupyterlab with extensions: toc, git, matplotlib
+    ffmpeg              Install FFmpeg with all modules
+    opencv              Install OpenCV 4.1.0
     all                 Install all the packages
 EOF
 }
@@ -365,7 +368,7 @@ devsetup_install_python_libraries() {
     print magenta frame "Create a python virtual environment 'py365'\n"
     workon_virtual_environment_py365
 
-    print magenta frame "Install Python libraries\n"
+    print magenta frame "Installing Python libraries\n"
     workon py365
     pip install --no-cache-dir --upgrade pip
 
@@ -419,7 +422,7 @@ devsetup_install_jupyterlab() {
         jupyterlab \
         jupyterlab-git
 
-    print magenta frame "Install Jupyterlab extensions (Require Node.js)\n"
+    print magenta frame "Installing Jupyterlab extensions (Require Node.js)\n"
     homebrew_update
     brew install node # Jupyterlab extensions dependency
     workon py365
@@ -436,6 +439,138 @@ devsetup_install_jupyterlab() {
     npm cache clean --force
 
     print green frame "Jupyterlab installation successful\n"
+}
+
+devsetup_install_ffmpeg() {
+    print magenta frame "Install FFmpeg\n"
+    homebrew_update
+    brew install ffmpeg $(brew options ffmpeg | grep -E '^--with-' - | tr '\n' ' ')
+    print green frame "FFmpeg installation successful\n"
+}
+
+devsetup_install_opencv() {
+    print magenta frame "Download, configure and install Opencv\n"
+
+    OPENCV_VERSION="4.1.0"
+    OPENCV_URL="https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz"
+    OPENCV_CONTRIB_URL="https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.tar.gz"
+
+    print magenta "Installing Opencv dependencies\n"
+    homebrew_update
+
+    brew install cmake pkg-config jpeg webp gphoto2 libpng libtiff openexr eigen tbb
+
+    workon_virtual_environment_py365
+    workon py365
+
+    pip install --no-cache-dir --upgrade pip numpy
+    devsetup_install_ffmpeg
+
+    print magenta "DOWNLOADING OpenCV files\n"
+    # TO REMOVE : fix devsetup installation at /usr/local/DevSetup/
+    wait_for_sudo
+    sudo mkdir -p "${DEVSETUP_PREFIX2}/DevSetup"
+    sudo chown ${USER}:"admin" "${DEVSETUP_PREFIX2}/DevSetup"
+    # END TO REMOVE
+
+    mkdir -p "${DEVSETUP_PREFIX2}/DevSetup/OpenCV"
+    cd "${DEVSETUP_PREFIX2}/DevSetup/OpenCV"
+
+    if [[ -e "opencv.tar.gz" && -e "opencv_contrib.tar.gz" ]]; then
+        print magenta "Using local files: \n"
+        print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv.tar.gz\n"
+        print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv_contrib.tar.gz\n"
+    else
+        curl -L ${OPENCV_URL} -o "opencv.tar.gz"
+        curl -L ${OPENCV_CONTRIB_URL} -o "opencv_contrib.tar.gz"
+    fi
+
+    tar -xzf opencv.tar.gz
+    tar -xzf opencv_contrib.tar.gz
+
+    mkdir -p opencv-${OPENCV_VERSION}/build
+    cd opencv-${OPENCV_VERSION}/build
+
+    print magenta "CONFIGURING OpenCV installation\n"
+    set -e # Exit immediately if the pipeline fail
+
+    # Automatically ENABLE/DISABLE Qt
+    if ls $HOME/Qt*/*/clang_64/bin/qmake 1>/dev/null 2>&1; then
+        QT_ON_OFF=ON
+    else
+        QT_ON_OFF=OFF
+    fi
+
+    QT_LIB=`echo $HOME/Qt*/*/clang_64/lib/cmake`
+    QT_QMAKE=`echo $HOME/Qt*/*/clang_64/bin/qmake`
+
+    # Get PATH for Python libraries
+    py3_exec=`which python3`
+    py3_config=`python3 -c "from distutils.sysconfig import get_config_var as s; print(s('LIBDIR'))"`
+    py3_version=`python3 -c "from sys import version_info as s; print('{}.{}'.format(s.major, s.minor))"`
+    py3_include=`python3 -c "import distutils.sysconfig as s; print(s.get_python_inc())"`
+    py3_packages=`python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())"`
+    py3_numpy=`python3 -c "import numpy; print(numpy.get_include())"`
+
+    cmake -D CMAKE_BUILD_TYPE=RELEASE \
+        -D CMAKE_INSTALL_PREFIX=/usr/local \
+        -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
+        -D ENABLE_PRECOMPILED_HEADERS=OFF \
+        -D WITH_CUDA=OFF \
+        -D WITH_QT=${QT_ON_OFF} \
+        -D CMAKE_PREFIX_PATH=${QT_LIB} \
+        -D QT_QMAKE_EXECUTABLE=${QT_QMAKE} \
+        -D QT5Core_DIR=${QT_LIB}/Qt5Core \
+        -D QT5Gui_DIR=${QT_LIB}/Qt5Gui \
+        -D QT5Test_DIR=${QT_LIB}/Qt5Test \
+        -D QT5Widgets_DIR=${QT_LIB}/Qt5Widgets \
+        -D Qt5Concurrent_DIR=${QT_LIB}/Qt5Concurrent \
+        -D OPENCV_ENABLE_NONFREE=ON \
+        -D WITH_GTK=OFF \
+        -D WITH_OPENGL=ON \
+        -D WITH_OPENVX=ON \
+        -D WITH_OPENCL=ON \
+        -D WITH_TBB=ON \
+        -D WITH_EIGEN=ON \
+        -D WITH_GDAL=ON \
+        -D WITH_FFMPEG=ON \
+        -D BUILD_TIFF=ON \
+        -D BUILD_opencv_python2=OFF \
+        -D BUILD_opencv_python3=ON \
+        -D PYTHON_DEFAULT_EXECUTABLE=${py3_exec} \
+        -D PYTHON3_EXECUTABLE=${py3_exec} \
+        -D PYTHON3_INCLUDE_DIR=${py3_include} \
+        -D PYTHON3_PACKAGES_PATH=${py3_packages} \
+        -D PYTHON3_LIBRARY=${py3_config} \
+        -D PYTHON3_NUMPY_INCLUDE_DIRS=${py3_numpy} \
+        -D INSTALL_PYTHON_EXAMPLES=ON \
+        -D INSTALL_C_EXAMPLES=ON \
+        -D BUILD_EXAMPLES=ON \
+        -D CMAKE_CXX_STANDARD=14 ..
+
+    print magenta "\nmake opencv\n"
+    wait_for_user
+    make -j"$(nproc)"
+
+    print magenta "\nsudo make install opencv\n"
+    wait_for_sudo
+    sudo make -j"$(nproc)" install
+
+    print magenta "Removing local files: \n"
+    print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv.tar.gz\n"
+    print "${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv_contrib.tar.gz\n\n"
+    cd "${DEVSETUP_PREFIX2}/DevSetup/OpenCV"
+    rm opencv.tar.gz
+    rm opencv_contrib.tar.gz
+
+    print yellow frame "# Symlink OpenCV to a new virtual environment\n"
+    print yellow "Copy and past the following commands:\n\n"
+    print blue "workon <virtual_environment>\n"
+    print blue "opencv_lib=\"${DEVSETUP_PREFIX2}/DevSetup/OpenCV/opencv/build/lib/python3/*.so\"\n"
+    print blue "site_packages=\`python3 -c \"import distutils.sysconfig as s; print(s.get_python_lib())\"\`\n"
+    print blue "ln -s \$\{opencv_lib\} \$\{site_packages\}\n\n"
+
+    print green frame "OpenCV installation successful\n"
 }
 
 devsetup_install_all() {
@@ -459,6 +594,8 @@ devsetup_install_all() {
     devsetup_install_pyenv
     devsetup_install_python_libraries
     devsetup_install_jupyterlab
+    devsetup_install_ffmpeg
+    devsetup_install_opencv
     devsetup_bash_profile_config
     devsetup_inputrc_config
 }
@@ -522,6 +659,12 @@ devsetup_install() {
             ;;
         "jupyterlab")
             devsetup_install_jupyterlab
+            ;;
+        "ffmpeg")
+            devsetup_install_ffmpeg
+            ;;
+        "opencv")
+            devsetup_install_opencv
             ;;
         "all")
             devsetup_install_all

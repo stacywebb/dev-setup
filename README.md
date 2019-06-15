@@ -43,6 +43,8 @@ To install a package: `devsetup --install <package>`
 | `pyenv`               | Install multiple Python versions using 'pyenv': Python 2.7.15, 3.6.5, 3.7.3   |
 | `pylibs`              | Install Python Libraries: TensorFlow, Keras, scientific libraires             |
 | `jupyterlab`          | Install Jupyterlab with extensions: toc, git, matplotlib                      |
+| `ffmpeg`              | Install FFmpeg with all modules                                               |
+| `opencv`              | Install OpenCV 4.1.0                                                          |
 | `all`                 | Install all the packages                                                      |
 
 ### macOS update functions
