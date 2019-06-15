@@ -26,6 +26,10 @@ To install devsetup for macOS to `/usr/local`, paste at a terminal prompt:
 bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/install_macos)
 ```
 
+> macOS terminal with devsetup .bash_profile and .inputrc set-up
+
+![macOS terminal](./macos/macos_terminal.gif?raw=true)
+
 ### macOS Packages
 
 To install a package: `devsetup --install <package>`
@@ -46,6 +50,8 @@ To update a package or configuration: `devsetup --update <package>`
 | ---               | ---                                                                           |
 | `devsetup`        | Update devsetup script (download the latest version)                          |
 | `git`             | Set-up git with username, email, and terminal colors                          |
+| `bash-profile`    | Set-up bash_profile                                                           |
+| `inputrc`         | Improve command line history search                                           |
 
 ## Install devsetup for GNU/Linux
 

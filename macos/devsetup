@@ -52,8 +52,99 @@ cat <<EOF
 
     Script          Description
     devsetup        Update devsetup
+    git             Set-up git with username, email, and terminal colors
+    bash-profile    Set-up bash_profile
+    inputrc         Improve command line history search
 EOF
 }
+
+read -r -d '' BASH_PROFILE <<"EOF"
+# !/bin/bash
+###########################################################
+# Bash Profile
+#
+# Copyright (c) Marcos Gomes-Borges
+###########################################################
+
+# LS Colors
+# CLICOLOR use ANSI color sequences to distinguish file types
+export CLICOLOR=true
+export LSCOLORS=gxegbxdxcxahadabafacge
+alias ls='ls -GFh'
+
+# COLORS \e[<prefix>;<color>m;<decoration> http://jonasjacek.github.io/colors
+TEAL="\[\e[38;5;6m\]\]"
+YELLOW="\[\e[38;5;11m\]"
+MAGENTA="\[\e[38;5;13m\]"
+WHITE="\[\e[38;5;15m\]"
+GREEN="\[\e[38;5;40m\]"
+NONE="\[\e[0m\]"
+
+# Prevent Mac OS ._ in in tar.gz files
+export COPYFILE_DISABLE=true
+
+# Homebrew
+export PATH="/usr/local/bin:${PATH}"
+
+# Homebrew completion
+if [ -f $(brew --prefix)/etc/bash_completion.d/brew ]; then
+    . $(brew --prefix)/etc/bash_completion.d/brew
+fi
+
+# Bash completion@2
+if [ -f /usr/local/share/bash-completion/bash_completion ]; then
+  . /usr/local/share/bash-completion/bash_completion
+fi
+
+# Bash-Git-prompt
+if [ -f $(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh ]; then
+    __GIT_PROMPT_DIR=$(brew --prefix)/opt/bash-git-prompt/share
+
+    GIT_PS1_SHOWCOLORHINTS=true
+    GIT_PS1_SHOWDIRTYSTATE=true
+    GIT_PS1_SHOWUNTRACKEDFILES=true
+    GIT_PS1_DESCRIBE_STYLE='default'
+
+    source $(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh
+fi
+
+# Python virtual environment
+# Allow pip only for active virtual environment
+# Use `gpip` or `gpip3` for global environment
+export PIP_REQUIRE_VIRTUALENV=true
+gpip(){
+    PIP_REQUIRE_VIRTUALENV="" pip "${@}"
+}
+gpip3(){
+    PIP_REQUIRE_VIRTUALENV="" pip3 "${@}"
+}
+
+# Pyenv Python version management
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+    pyenv virtualenvwrapper
+fi
+
+# PRIMARY PROMPT
+PROMPT_COMMAND='__git_ps1\
+                "\n${MAGENTA}[\d \t] ${YELLOW}`(python --version 2>&1)`${NONE}\
+                \n${GREEN}\u@\h:${TEAL}\w${NONE}"\
+                "\n${VIRTUAL_ENV:+(`basename ${VIRTUAL_ENV}`)}\\$ "\
+                " (%s)"'
+EOF
+
+read -r -d '' INPUTRC <<"EOF"
+"\e[A":history-search-backward
+"\e[B":history-search-forward
+
+set colored-stats on
+set mark-symlinked-directories on
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+set visible-stats on
+set completion-ignore-case on
+TAB: menu-complete
+EOF
 
 # Print formated message: print <color> <frame> "message"
 ###########################################################
@@ -261,6 +352,8 @@ devsetup_install_pyenv() {
 
     print magenta "Setting up virtualenvwrapper\n"
     pyenv virtualenvwrapper
+
+    print green frame "pyenv installation successful\n"
 }
 
 # devsetup install
@@ -305,6 +398,30 @@ devsetup_update_devsetup() {
     print green "\nUpdate successful\n"
 }
 
+# devsetup update bash_profile
+###########################################################
+devsetup_bash_profile_config() {
+    if [[ -f ~/.bash_profile ]]; then
+        print red "\nThis script will create/overwrite .bash_profile file!\n"
+        print magenta "\nA backup will be available: "
+        print "~/.bash_profile.bkp\n"
+
+        wait_for_user
+
+        cp ~/.bash_profile ~/.bash_profile.bkp
+    fi
+
+    echo "${BASH_PROFILE}" > ${HOME}/.bash_profile
+    print green frame "~/.bash_profile configured successful\n"
+}
+
+# devsetup update inputrc
+###########################################################
+devsetup_inputrc_config() {
+    echo "${INPUTRC}" > ${HOME}/.inputrc
+    print green frame "~/.inputrc configured successful\n"
+}
+
 # devsetup update
 ###########################################################
 devsetup_update() {
@@ -314,6 +431,12 @@ devsetup_update() {
             ;;
         "git")
             devsetup_git_config
+            ;;
+        "bash-profile")
+            devsetup_bash_profile_config
+            ;;
+        "inputrc")
+            devsetup_inputrc_config
             ;;
         ""|*)
             usage_update_fatal ${@}
