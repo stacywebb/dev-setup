@@ -1,6 +1,6 @@
 # Development Environment Setup
 
-Setting up a new development environment can be a manual and time-consuming process. This project aims to simplify the process with easy instructions and scripts to automate the set-up of the following:
+Setting up a new development environment can be a manual and time-consuming process. This project aims to simplify the process with easy instructions and scripts to automate the setup of the following:
 
 * GNU/Linux
 * macOS
@@ -26,7 +26,7 @@ To install devsetup for macOS to `/usr/local`, paste at a terminal prompt:
 bash <(curl -fsSL https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/install_macos)
 ```
 
-> macOS terminal with devsetup .bash_profile and .inputrc set-up
+macOS terminal with devsetup `.bash_profile` and `.inputrc`:
 
 ![macOS terminal](./macos/macos_terminal.gif?raw=true)
 
@@ -37,10 +37,11 @@ To install a package: `devsetup --install <package>`
 | macOS Package         | Description                                                                   |
 | ---                   | ---                                                                           |
 | `homebrew`            | Install Hombrew and its dependencies: GCC and Command Line Tools with Headers |
-| `git`                 | Install and set-up git                                                        |
+| `git`                 | Install and setup git                                                        |
 | `bash`                | Install the latest version of Bash                                            |
 | `bash-tab-completion` | Install bash tab completion 2, git-prompt, and docker tab completion          |
 | `pyenv`               | Install multiple Python versions using 'pyenv': Python 2.7.15, 3.6.5, 3.7.3   |
+| `all`                 | Install all the packages                                                          |
 
 ### macOS update functions
 

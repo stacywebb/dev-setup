@@ -33,10 +33,11 @@ cat <<EOF
 
     Script              Description
     homebrew            Install homebrew package manager for macOS
-    git                 Install and set-up git
+    git                 Install and setup git
     bash                Install the latest version of Bash
     bash-tab-completion Install bash tab completion 2
     pyenv               Install multiple Python versions using 'pyenv'
+    all                 Install all the packages
 EOF
 }
 
@@ -169,6 +170,26 @@ wait_for_user() {
     fi
 }
 
+wait_for_sudo() {
+    trap "exit 1" SIGINT # Process Interruption Ctrl-C
+
+    # Check if sudo password has been entered
+    # If not, request sudo password
+    if sudo -vn 2>/dev/null; then
+        print blue "\n[sudo] this script is using sudo privileges!\n\n"
+    else
+        print yellow "\n[sudo] Enter password for ${USER}\n"
+        sudo -v
+    fi
+
+    # Abort if no sudo privileges
+    if ! sudo -vn 2>/dev/null; then
+        print red "Aborted: "
+        print "this script needs sudo privileges!\n"
+        exit 1
+    fi
+}
+
 print_version() {
   print "devsetup ${VERSION}\n"
 }
@@ -201,10 +222,7 @@ homebrew_update() {
 }
 
 devsetup_install_homebrew() {
-    trap "exit 1" SIGINT # Process Interruption Ctrl-C
-
-    print yellow "[sudo] Enter password for ${USER}\n"
-    sudo -v
+    wait_for_sudo
 
     print magenta "Installing the GNU Compiler Collection (GCC)\n"
     xcode-select --install
@@ -264,11 +282,7 @@ devsetup_install_git() {
 }
 
 devsetup_install_bash() {
-    trap "exit 1" SIGINT # Process Interruption Ctrl-C
-
-    print yellow "[sudo] Enter password for ${USER}\n"
-    sudo -v
-
+    wait_for_sudo
     homebrew_update
     brew install bash
 
@@ -284,11 +298,7 @@ devsetup_install_bash() {
 }
 
 devsetup_install_bash_tab_completion() {
-    trap "exit 1" SIGINT # Process Interruption Ctrl-C
-
-    print yellow "[sudo] Enter password for ${USER}\n"
-    sudo -v
-
+    wait_for_sudo
     homebrew_update
 
     print magenta "Install bash TAB completion 2\n"
@@ -330,6 +340,29 @@ devsetup_install_pyenv() {
     print green frame "pyenv installation successful\n"
 }
 
+devsetup_install_all() {
+    trap "exit 1" SIGINT # Process Interruption Ctrl-C
+
+    print magenta "\nThis script will install:\n"
+    print "\thomebrew\n"
+    print "\tgit\n"
+    print "\tbash\n"
+    print "\tbash-tab-completion\n"
+    print "\tpyenv\n"
+    print "\t~/.inputrc\n"
+    print "\t~/.bash-profile\n"
+
+    wait_for_user
+    wait_for_sudo
+    devsetup_install_homebrew
+    devsetup_install_git
+    devsetup_install_bash
+    devsetup_install_bash_tab_completion
+    devsetup_install_pyenv
+    devsetup_bash_profile_config
+    devsetup_inputrc_config
+}
+
 devsetup_update_devsetup() {
     print magenta "\nCurrent directory: "
     print "`pwd`\n"
@@ -366,6 +399,8 @@ devsetup_inputrc_config() {
 
 # Parse devsetup --install options
 devsetup_install() {
+    sudo -K # Force sudo <command> ask for a root password
+
     case ${@} in
         "homebrew")
             devsetup_install_homebrew
@@ -382,6 +417,9 @@ devsetup_install() {
         "pyenv")
             devsetup_install_pyenv
             ;;
+        "all")
+            devsetup_install_all
+            ;;
         ""|*)
             usage_install_fatal ${@}
             exit 1
@@ -391,6 +429,8 @@ devsetup_install() {
 
 # Parse devsetup --update options
 devsetup_update() {
+    sudo -K # Force sudo <command> ask for a root password
+
     case ${@} in
         "devsetup")
             devsetup_update_devsetup
