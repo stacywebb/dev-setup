@@ -3,7 +3,7 @@
 Setting up a new development environment can be a manual and time-consuming process. This project aims to simplify the process with easy instructions and scripts to automate the setup of the following:
 
 * GNU/Linux
-* macOS
+* macOS - [see the tutorial page](./macos/devsetup_macos_tutorial.md)
 * Windows
 * Docker
 
