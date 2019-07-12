@@ -59,7 +59,7 @@ EOF
 }
 
 read -r -d '' BASH_PROFILE <<"EOF"
-# !/bin/bash
+#!/bin/bash
 ###########################################################
 # Bash Profile
 #
@@ -76,7 +76,6 @@ alias ls='ls -GFh'
 TEAL="\[\e[38;5;6m\]\]"
 YELLOW="\[\e[38;5;11m\]"
 MAGENTA="\[\e[38;5;13m\]"
-WHITE="\[\e[38;5;15m\]"
 GREEN="\[\e[38;5;40m\]"
 NONE="\[\e[0m\]"
 
@@ -87,30 +86,30 @@ export COPYFILE_DISABLE=true
 export PATH="/usr/local/bin:${PATH}"
 
 # Homebrew completion
-if [ -f $(brew --prefix)/etc/bash_completion.d/brew ]; then
-    . $(brew --prefix)/etc/bash_completion.d/brew
+if [ -f "$(brew --prefix)/etc/bash_completion.d/brew" ]; then
+    . "$(brew --prefix)/etc/bash_completion.d/brew"
 fi
 
 # Bash completion@2
 if [ -f /usr/local/share/bash-completion/bash_completion ]; then
-  . /usr/local/share/bash-completion/bash_completion
+    . /usr/local/share/bash-completion/bash_completion
 fi
 
 # Bash-Git-prompt
-if [ -f $(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh ]; then
-    __GIT_PROMPT_DIR=$(brew --prefix)/opt/bash-git-prompt/share
+if [ -f "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh" ]; then
+    __GIT_PROMPT_DIR="$(brew --prefix)/opt/bash-git-prompt/share"
 
     GIT_PS1_SHOWCOLORHINTS=true
     GIT_PS1_SHOWDIRTYSTATE=true
     GIT_PS1_SHOWUNTRACKEDFILES=true
     GIT_PS1_DESCRIBE_STYLE='default'
 
-    source $(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh
+    source "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh"
 fi
 
 # Python virtual environment
 # Allow pip only for active virtual environment
-# Use `gpip` or `gpip3` for global environment
+# Use 'gpip' or 'gpip3' for global environment
 export PIP_REQUIRE_VIRTUALENV=true
 gpip(){
     PIP_REQUIRE_VIRTUALENV="" pip "${@}"
@@ -127,9 +126,9 @@ fi
 
 # PRIMARY PROMPT
 PROMPT_COMMAND='__git_ps1\
-                "\n${MAGENTA}[\d \t] ${YELLOW}`(python --version 2>&1)`${NONE}\
+                "\n${MAGENTA}[\d \t] ${YELLOW}$(python --version 2>&1)${NONE}\
                 \n${GREEN}\u@\h:${TEAL}\w${NONE}"\
-                "\n${VIRTUAL_ENV:+(`basename ${VIRTUAL_ENV}`)}\\$ "\
+                "\n${VIRTUAL_ENV:+($(basename ${VIRTUAL_ENV}))}\\$ "\
                 " (%s)"'
 EOF
 
@@ -155,20 +154,20 @@ print() {
     esac
 
     if [[ ${FRAME} = "frame" ]]; then
-        printf "${!COLOR}`printf "=%0.s" {0..79}`\n"
+        printf "${!COLOR}$(printf "=%0.s" {0..79})\n"
         printf "${!COLOR}${MSG}"
-        printf "${!COLOR}`printf "=%0.s" {0..79}`\n"
+        printf "${!COLOR}$(printf "=%0.s" {0..79})\n"
     else
         printf "${!COLOR}${MSG}"
     fi
 
-    printf ${nc}
+    printf "${nc}"
 }
 
 wait_for_user() {
     print yellow "\nPress RETURN to continue or any other key to abort!\n"
 
-    read -s -n 1 key
+    read -rsn 1 key
     if [[ ${key} != "" ]]; then
         exit 0
     fi
@@ -199,17 +198,17 @@ print_version() {
 }
 
 usage_fatal() {
-    print red "devsetup: illegal option ${@}\n"
+    print red "devsetup: illegal option ${*}\n"
     usage >&2
 }
 
 usage_install_fatal() {
-    print red "devsetup install: illegal option ${@}\n"
+    print red "devsetup install: illegal option ${*}\n"
     usage_install >&2
 }
 
 usage_update_fatal() {
-    print red "devsetup update: illegal option ${@}\n"
+    print red "devsetup update: illegal option ${*}\n"
     usage_update >&2
 }
 
@@ -250,10 +249,10 @@ devsetup_git_config() {
     print magenta frame "GIT configuration\n"
 
     print yellow "git config --global user.name \"Your name\": "
-    read GIT_USER_NAME
+    read -r GIT_USER_NAME
 
     print yellow "git config --global user.email \"your@email.com\": "
-    read GIT_USER_EMAIL
+    read -r GIT_USER_EMAIL
 
     # Confirm user input
     print magenta "\nUser Name: "
@@ -290,7 +289,7 @@ devsetup_install_bash() {
     homebrew_update
     brew install bash
 
-    if [[ `cat /etc/shells | grep '/usr/local/bin/bash'` = "" ]]; then
+    if [[ $(cat /etc/shells | grep '/usr/local/bin/bash') = "" ]]; then
         print magenta "Adding the new shell to the list of allowed shells\n"
         sudo bash -c 'echo /usr/local/bin/bash >> /etc/shells'
 
@@ -406,8 +405,8 @@ devsetup_install_python_libraries() {
         matplotlib
 
     # Fix Matplotlib backend
-    mkdir -p ~/.config/matplotlib
-    echo "backend : TkAgg" > ~/.config/matplotlib/matplotlibrc
+    mkdir -p "${HOME}/.config/matplotlib"
+    echo "backend : TkAgg" > "${HOME}/.config/matplotlib/matplotlibrc"
 
     print green frame "Python libraries installation successful\n"
 }
@@ -489,36 +488,35 @@ devsetup_install_opencv() {
     set -e # Exit immediately if the pipeline fail
 
     # Automatically ENABLE/DISABLE Qt
-    if ls $HOME/Qt*/*/clang_64/bin/qmake 1>/dev/null 2>&1; then
+    if ls ${HOME}/Qt*/*/clang_64/bin/qmake 1>/dev/null 2>&1; then
         QT_ON_OFF=ON
     else
         QT_ON_OFF=OFF
     fi
 
-    QT_LIB=`echo $HOME/Qt*/*/clang_64/lib/cmake`
-    QT_QMAKE=`echo $HOME/Qt*/*/clang_64/bin/qmake`
+    QT_LIB=$(echo ${HOME}/Qt*/*/clang_64/lib/cmake)
+    QT_QMAKE=$(echo ${HOME}/Qt*/*/clang_64/bin/qmake)
 
     # Get PATH for Python libraries
-    py3_exec=`which python3`
-    py3_config=`python3 -c "from distutils.sysconfig import get_config_var as s; print(s('LIBDIR'))"`
-    py3_version=`python3 -c "from sys import version_info as s; print('{}.{}'.format(s.major, s.minor))"`
-    py3_include=`python3 -c "import distutils.sysconfig as s; print(s.get_python_inc())"`
-    py3_packages=`python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())"`
-    py3_numpy=`python3 -c "import numpy; print(numpy.get_include())"`
+    py3_exec=$(which python3)
+    py3_config=$(python3 -c "from distutils.sysconfig import get_config_var as s; print(s('LIBDIR'))")
+    py3_include=$(python3 -c "import distutils.sysconfig as s; print(s.get_python_inc())")
+    py3_packages=$(python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())")
+    py3_numpy=$(python3 -c "import numpy; print(numpy.get_include())")
 
     cmake -D CMAKE_BUILD_TYPE=RELEASE \
         -D CMAKE_INSTALL_PREFIX=/usr/local \
-        -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
+        -D OPENCV_EXTRA_MODULES_PATH="../../opencv_contrib-${OPENCV_VERSION}/modules" \
         -D ENABLE_PRECOMPILED_HEADERS=OFF \
         -D WITH_CUDA=OFF \
-        -D WITH_QT=${QT_ON_OFF} \
-        -D CMAKE_PREFIX_PATH=${QT_LIB} \
-        -D QT_QMAKE_EXECUTABLE=${QT_QMAKE} \
-        -D QT5Core_DIR=${QT_LIB}/Qt5Core \
-        -D QT5Gui_DIR=${QT_LIB}/Qt5Gui \
-        -D QT5Test_DIR=${QT_LIB}/Qt5Test \
-        -D QT5Widgets_DIR=${QT_LIB}/Qt5Widgets \
-        -D Qt5Concurrent_DIR=${QT_LIB}/Qt5Concurrent \
+        -D WITH_QT="${QT_ON_OFF}" \
+        -D CMAKE_PREFIX_PATH="${QT_LIB}" \
+        -D QT_QMAKE_EXECUTABLE="${QT_QMAKE}" \
+        -D QT5Core_DIR="${QT_LIB}/Qt5Core" \
+        -D QT5Gui_DIR="${QT_LIB}/Qt5Gui" \
+        -D QT5Test_DIR="${QT_LIB}/Qt5Test" \
+        -D QT5Widgets_DIR="${QT_LIB}/Qt5Widgets" \
+        -D Qt5Concurrent_DIR="${QT_LIB}/Qt5Concurrent" \
         -D OPENCV_ENABLE_NONFREE=ON \
         -D WITH_GTK=OFF \
         -D WITH_OPENGL=ON \
@@ -531,12 +529,12 @@ devsetup_install_opencv() {
         -D BUILD_TIFF=ON \
         -D BUILD_opencv_python2=OFF \
         -D BUILD_opencv_python3=ON \
-        -D PYTHON_DEFAULT_EXECUTABLE=${py3_exec} \
-        -D PYTHON3_EXECUTABLE=${py3_exec} \
-        -D PYTHON3_INCLUDE_DIR=${py3_include} \
-        -D PYTHON3_PACKAGES_PATH=${py3_packages} \
-        -D PYTHON3_LIBRARY=${py3_config} \
-        -D PYTHON3_NUMPY_INCLUDE_DIRS=${py3_numpy} \
+        -D PYTHON_DEFAULT_EXECUTABLE="${py3_exec}" \
+        -D PYTHON3_EXECUTABLE="${py3_exec}" \
+        -D PYTHON3_INCLUDE_DIR="${py3_include}" \
+        -D PYTHON3_PACKAGES_PATH="${py3_packages}" \
+        -D PYTHON3_LIBRARY="${py3_config}" \
+        -D PYTHON3_NUMPY_INCLUDE_DIRS="${py3_numpy}" \
         -D INSTALL_PYTHON_EXAMPLES=ON \
         -D INSTALL_C_EXAMPLES=ON \
         -D BUILD_EXAMPLES=ON \
@@ -561,8 +559,8 @@ devsetup_install_opencv() {
     print yellow "Copy and past the following commands:\n\n"
     print blue "workon <virtual_environment>\n"
     print blue "opencv_lib=\"${DEVSETUP_PREFIX}/DevSetup/OpenCV/opencv/build/lib/python3/*.so\"\n"
-    print blue "site_packages=\`python3 -c \"import distutils.sysconfig as s; print(s.get_python_lib())\"\`\n"
-    print blue "ln -s \$\{opencv_lib\} \$\{site_packages\}\n\n"
+    print blue 'site_packages=$(python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())")\n'
+    print blue 'ln -s ${opencv_lib} ${site_packages}\n\n'
 
     print green frame "OpenCV installation successful\n"
 }
@@ -576,8 +574,8 @@ devsetup_install_all() {
     print "\tbash\n"
     print "\tbash-tab-completion\n"
     print "\tpyenv\n"
-    print "\t~/.inputrc\n"
-    print "\t~/.bash-profile\n"
+    print "\t${HOME}/.inputrc\n"
+    print "\t${HOME}/.bash-profile\n"
 
     wait_for_user
     wait_for_sudo
@@ -610,23 +608,23 @@ devsetup_update_devsetup() {
 }
 
 devsetup_bash_profile_config() {
-    if [[ -f ~/.bash_profile ]]; then
+    if [[ -f "${HOME}/.bash_profile" ]]; then
         print red "\nThis script will create/overwrite .bash_profile file!\n"
         print magenta "\nA backup will be available: "
-        print "~/.bash_profile.bkp\n"
+        print "${HOME}/.bash_profile.bkp\n"
 
         wait_for_user
 
-        cp ~/.bash_profile ~/.bash_profile.bkp
+        cp "${HOME}/.bash_profile" "${HOME}/.bash_profile.bkp"
     fi
 
     echo "${BASH_PROFILE}" > ${HOME}/.bash_profile
-    print green frame "~/.bash_profile configured successful\n"
+    print green frame "${HOME}/.bash_profile configured successful\n"
 }
 
 devsetup_inputrc_config() {
-    echo "${INPUTRC}" > ${HOME}/.inputrc
-    print green frame "~/.inputrc configured successful\n"
+    echo "${INPUTRC}" > "${HOME}/.inputrc"
+    print green frame "${HOME}/.inputrc configured successful\n"
 }
 
 devsetup_vscode_config() {
@@ -710,7 +708,7 @@ devsetup_vscode_config() {
 
         print magenta "Configuring vscode as default git diff tool\n"
         git config --global diff.tool vscode
-        git config --global difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
+        git config --global difftool.vscode.cmd 'code --wait --diff ${LOCAL} ${REMOTE}'
     else
         print red "\nGit is not installed!\n"
         print magenta "Install it with: "
@@ -757,7 +755,7 @@ devsetup_install() {
             devsetup_install_all
             ;;
         ""|*)
-            usage_install_fatal ${@}
+            usage_install_fatal "${*}"
             exit 1
             ;;
     esac
@@ -784,7 +782,7 @@ devsetup_update() {
             devsetup_vscode_config
             ;;
         ""|*)
-            usage_update_fatal ${@}
+            usage_update_fatal "${*}"
             exit 1
             ;;
     esac
@@ -809,16 +807,16 @@ while [ "${#}" -gt 0 ]; do
             ;;
         -i|--install)
             shift
-            devsetup_install ${1}
+            devsetup_install "${1}"
             exit 0
             ;;
         -u|--update)
             shift
-            devsetup_update ${1}
+            devsetup_update "${1}"
             exit 0
             ;;
         --|-*|*)
-            usage_fatal ${1}
+            usage_fatal "${1}"
             exit 1
             ;;
     esac

@@ -84,7 +84,7 @@ The first thing we need to install is the [GNU Compiler Collection (GCC)](https:
 
     ```bash
     bash --version
-    # GNU bash, version 4.4.23(1)-release
+    # GNU bash, version 5.0.7(1)-release
     ```
 
 5. Install bash TAB completion 2:
@@ -121,29 +121,45 @@ This is the terminal using my personal theme and `.bash_profile` configuration. 
 
 ![Gomes-Borges macOS terminal](./gomes_borges_terminal.png?raw=true)
 
-1. Download and open the [macOS.terminal](https://github.com/marcosgomesborges/dev-setup/blob/master/macos/macOS.terminal) file.
+1. Download and open the [macOS.terminal](https://github.com/marcosgomesborges/dev-setup/blob/master/macos/macOS.terminal) file:
+
+    ```bash
+    THEME_URL=https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/macOS.terminal
+
+    cd ${HOME}
+
+    curl -L ${THEME_URL} -o macOS.terminal
+    open macOS.terminal
+    ```
 
 2. Once the terminal is open, set the theme as default:
-   * Select `Terminal` menu then `Preferences`
+   * In the top menu bar, select `Terminal` then `Preferences`
    * Select the `Profiles` Tab
    * Click and highlight the `macOS` themes
    * Press the `Default` button near the bottom of the window
 
 3. Update the .bash_profile file using the following commands:
 
-    * Backup the current ~/.bash_profile
+    * Backup the current .bash_profile
 
       ```bash
-      if [[ -f ~/.bash_profile ]]; then
-          cp ~/.bash_profile ~/.bash_profile.bkp
+      if [[ -f "${HOME}/.bash_profile" ]]; then
+          cp "${HOME}/.bash_profile" "${HOME}/.bash_profile.bkp"
+
+          echo "" > "${HOME}/.bash_profile"
       fi
       ```
 
-    * Update the .bash_profile copying and pasting the following script:
+    * Open the .bash_profile file
 
       ```bash
-      read -r -d '' BASH_PROFILE <<"EOF"
-      # !/bin/bash
+      open -e "${HOME}/.bash_profile"
+      ```
+
+    * Update the .bash_profile copying and pasting the text below. Then save and close the .bash_profile file.
+
+      ```bash
+      #!/bin/bash
       ###########################################################
       # Bash Profile
       #
@@ -160,7 +176,6 @@ This is the terminal using my personal theme and `.bash_profile` configuration. 
       TEAL="\[\e[38;5;6m\]\]"
       YELLOW="\[\e[38;5;11m\]"
       MAGENTA="\[\e[38;5;13m\]"
-      WHITE="\[\e[38;5;15m\]"
       GREEN="\[\e[38;5;40m\]"
       NONE="\[\e[0m\]"
 
@@ -171,30 +186,30 @@ This is the terminal using my personal theme and `.bash_profile` configuration. 
       export PATH="/usr/local/bin:${PATH}"
 
       # Homebrew completion
-      if [ -f $(brew --prefix)/etc/bash_completion.d/brew ]; then
-          . $(brew --prefix)/etc/bash_completion.d/brew
+      if [ -f "$(brew --prefix)/etc/bash_completion.d/brew" ]; then
+          . "$(brew --prefix)/etc/bash_completion.d/brew"
       fi
 
       # Bash completion@2
       if [ -f /usr/local/share/bash-completion/bash_completion ]; then
-      . /usr/local/share/bash-completion/bash_completion
+          . /usr/local/share/bash-completion/bash_completion
       fi
 
       # Bash-Git-prompt
-      if [ -f $(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh ]; then
-          __GIT_PROMPT_DIR=$(brew --prefix)/opt/bash-git-prompt/share
+      if [ -f "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh" ]; then
+          __GIT_PROMPT_DIR="$(brew --prefix)/opt/bash-git-prompt/share"
 
           GIT_PS1_SHOWCOLORHINTS=true
           GIT_PS1_SHOWDIRTYSTATE=true
           GIT_PS1_SHOWUNTRACKEDFILES=true
           GIT_PS1_DESCRIBE_STYLE='default'
 
-          source $(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh
+          source "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh"
       fi
 
       # Python virtual environment
       # Allow pip only for active virtual environment
-      # Use `gpip` or `gpip3` for global environment
+      # Use 'gpip' or 'gpip3' for global environment
       export PIP_REQUIRE_VIRTUALENV=true
       gpip(){
           PIP_REQUIRE_VIRTUALENV="" pip "${@}"
@@ -211,14 +226,10 @@ This is the terminal using my personal theme and `.bash_profile` configuration. 
 
       # PRIMARY PROMPT
       PROMPT_COMMAND='__git_ps1\
-                      "\n${MAGENTA}[\d \t] ${YELLOW}`(python --version 2>&1)`${NONE}\
+                      "\n${MAGENTA}[\d \t] ${YELLOW}$(python --version 2>&1)${NONE}\
                       \n${GREEN}\u@\h:${TEAL}\w${NONE}"\
-                      "\n${VIRTUAL_ENV:+(`basename ${VIRTUAL_ENV}`)}\\$ "\
+                      "\n${VIRTUAL_ENV:+($(basename ${VIRTUAL_ENV}))}\\$ "\
                       " (%s)"'
-      EOF
-
-
-      echo "${BASH_PROFILE}" > ${HOME}/.bash_profile
       ```
 
 ## Improve command line history search
@@ -269,14 +280,19 @@ echo "${INPUTRC}" > ${HOME}/.inputrc
     PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.6.5
     PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.7.3
     ```
+    > If the installation fail you can try this workaround for macOS 10.14
 
-4. Set the Python version you want as default:
+    ```bash
+    SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk MACOSX_DEPLOYMENT_TARGET=10.14 PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.6.5
+    ```
+
+1. Set the Python version you want as default:
 
     ```bash
     pyenv global 3.6.5
     ```
 
-5. Setup the virtualenvwrapper:
+2. Setup the virtualenvwrapper:
 
     ```bash
     pyenv virtualenvwrapper
@@ -351,8 +367,8 @@ echo "${INPUTRC}" > ${HOME}/.inputrc
     pip install ipympl matplotlib
 
     # Fix Matplotlib backend
-    mkdir -p ~/.config/matplotlib
-    echo "backend : TkAgg" > ~/.config/matplotlib/matplotlibrc
+    mkdir -p "${HOME}/.config/matplotlib"
+    echo "backend : TkAgg" > "${HOME}/.config/matplotlib/matplotlibrc"
     ```
 
 8. Install Jupyter lab:
@@ -397,7 +413,6 @@ Copy and past the following commands:
 1. Download, configure and install Opencv
 
     ```bash
-    DEVSETUP_PREFIX="/usr/local"
     OPENCV_VERSION="4.1.0"
     OPENCV_URL="https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz"
     OPENCV_CONTRIB_URL="https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.tar.gz"
@@ -439,64 +454,65 @@ Copy and past the following commands:
         QT_ON_OFF=OFF
     fi
 
-    QT_LIB=`echo ${HOME}/Qt*/*/clang_64/lib/cmake`
-    QT_QMAKE=`echo ${HOME}/Qt*/*/clang_64/bin/qmake`
+    QT_LIB=$(echo ${HOME}/Qt*/*/clang_64/lib/cmake)
+    QT_QMAKE=$(echo ${HOME}/Qt*/*/clang_64/bin/qmake)
     ```
 
     ```bash
     # Get PATH for Python libraries
-    py3_exec=`which python3`
-    py3_config=`python3 -c "from distutils.sysconfig import get_config_var as s; print(s('LIBDIR'))"`
-    py3_version=`python3 -c "from sys import version_info as s; print('{}.{}'.format(s.major, s.minor))"`
-    py3_include=`python3 -c "import distutils.sysconfig as s; print(s.get_python_inc())"`
-    py3_packages=`python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())"`
-    py3_numpy=`python3 -c "import numpy; print(numpy.get_include())"`
+    py3_exec=$(which python3)
+    py3_config=$(python3 -c "from distutils.sysconfig import get_config_var as s; print(s('LIBDIR'))")
+    py3_include=$(python3 -c "import distutils.sysconfig as s; print(s.get_python_inc())")
+    py3_packages=$(python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())")
+    py3_numpy=$(python3 -c "import numpy; print(numpy.get_include())")
     ```
 
     ```bash
     # Configure OpenCV via CMake
     cmake -D CMAKE_BUILD_TYPE=RELEASE \
-    -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
-    -D ENABLE_PRECOMPILED_HEADERS=OFF \
-    -D WITH_CUDA=OFF \
-    -D WITH_QT=${QT_ON_OFF} \
-    -D CMAKE_PREFIX_PATH=${QT_LIB} \
-    -D QT_QMAKE_EXECUTABLE=${QT_QMAKE} \
-    -D QT5Core_DIR=${QT_LIB}/Qt5Core \
-    -D QT5Gui_DIR=${QT_LIB}/Qt5Gui \
-    -D QT5Test_DIR=${QT_LIB}/Qt5Test \
-    -D QT5Widgets_DIR=${QT_LIB}/Qt5Widgets \
-    -D Qt5Concurrent_DIR=${QT_LIB}/Qt5Concurrent \
-    -D OPENCV_ENABLE_NONFREE=ON \
-    -D WITH_GTK=OFF \
-    -D WITH_OPENGL=ON \
-    -D WITH_OPENVX=ON \
-    -D WITH_OPENCL=ON \
-    -D WITH_TBB=ON \
-    -D WITH_EIGEN=ON \
-    -D WITH_GDAL=ON \
-    -D WITH_FFMPEG=ON \
-    -D BUILD_TIFF=ON \
-    -D BUILD_opencv_python2=OFF \
-    -D BUILD_opencv_python3=ON \
-    -D PYTHON_DEFAULT_EXECUTABLE=${py3_exec} \
-    -D PYTHON3_EXECUTABLE=${py3_exec} \
-    -D PYTHON3_INCLUDE_DIR=${py3_include} \
-    -D PYTHON3_PACKAGES_PATH=${py3_packages} \
-    -D PYTHON3_LIBRARY=${py3_config} \
-    -D PYTHON3_NUMPY_INCLUDE_DIRS=${py3_numpy} \
-    -D INSTALL_PYTHON_EXAMPLES=ON \
-    -D INSTALL_C_EXAMPLES=ON \
-    -D BUILD_EXAMPLES=ON \
-    -D CMAKE_CXX_STANDARD=14 ..
+          -D CMAKE_INSTALL_PREFIX=/usr/local \
+          -D OPENCV_EXTRA_MODULES_PATH="../../opencv_contrib-${OPENCV_VERSION}/modules" \
+          -D ENABLE_PRECOMPILED_HEADERS=OFF \
+          -D WITH_CUDA=OFF \
+          -D WITH_QT="${QT_ON_OFF}" \
+          -D CMAKE_PREFIX_PATH="${QT_LIB}" \
+          -D QT_QMAKE_EXECUTABLE="${QT_QMAKE}" \
+          -D QT5Core_DIR="${QT_LIB}/Qt5Core" \
+          -D QT5Gui_DIR="${QT_LIB}/Qt5Gui" \
+          -D QT5Test_DIR="${QT_LIB}/Qt5Test" \
+          -D QT5Widgets_DIR="${QT_LIB}/Qt5Widgets" \
+          -D Qt5Concurrent_DIR="${QT_LIB}/Qt5Concurrent" \
+          -D OPENCV_ENABLE_NONFREE=ON \
+          -D WITH_GTK=OFF \
+          -D WITH_OPENGL=ON \
+          -D WITH_OPENVX=ON \
+          -D WITH_OPENCL=ON \
+          -D WITH_TBB=ON \
+          -D WITH_EIGEN=ON \
+          -D WITH_GDAL=ON \
+          -D WITH_FFMPEG=ON \
+          -D BUILD_TIFF=ON \
+          -D BUILD_opencv_python2=OFF \
+          -D BUILD_opencv_python3=ON \
+          -D PYTHON_DEFAULT_EXECUTABLE="${py3_exec}" \
+          -D PYTHON3_EXECUTABLE="${py3_exec}" \
+          -D PYTHON3_INCLUDE_DIR="${py3_include}" \
+          -D PYTHON3_PACKAGES_PATH="${py3_packages}" \
+          -D PYTHON3_LIBRARY="${py3_config}" \
+          -D PYTHON3_NUMPY_INCLUDE_DIRS="${py3_numpy}" \
+          -D INSTALL_PYTHON_EXAMPLES=ON \
+          -D INSTALL_C_EXAMPLES=ON \
+          -D BUILD_EXAMPLES=ON \
+          -D CMAKE_CXX_STANDARD=14 ..
     ```
 
 4. Make & make install
 
     ```bash
     make -j"$(nproc)"
+    ```
 
+    ```bash
     sudo make -j"$(nproc)" install
     ```
 
@@ -513,7 +529,7 @@ Copy and past the following commands:
 
 6. Test installation with C++
 
-    We can run some sample code located at `opencv/samples/cpp`:
+    We can run some sample code located at opencv/samples/cpp:
 
     ```bash
     # Access CPP examples
@@ -523,7 +539,7 @@ Copy and past the following commands:
     workon opencv
 
     # Compile and run without CUDA support
-    g++ -ggdb `pkg-config --cflags --libs opencv` facedetect.cpp -o /tmp/test && /tmp/test
+    g++ -ggdb $(pkg-config --cflags --libs opencv) facedetect.cpp -o /tmp/test && /tmp/test
     ```
 
 7. Test installation with Qt
@@ -559,7 +575,7 @@ Copy and past the following commands:
       PKGCONFIG += opencv
 
       # Add OpenCV Libraries
-      LIBS += `pkg-config --libs opencv`
+      LIBS += $(pkg-config --libs opencv)
       ```
 
     * You may receive a runtime error on macOS High Sierra. Note the actual error message may vary sometimes:
@@ -582,13 +598,14 @@ Copy and past the following commands:
 
     ```bash
     # Get the OpenCV library path
-    opencv_lib="${HOME}/opencv/build/lib/python3/*.so"
+    OPENCV_VERSION="4.1.0"
+    opencv_lib="${HOME}/opencv-${OPENCV_VERSION}/build/lib/python3/*.so"
 
     # Activate TARGET Python environment
     workon TARGET_ENV
 
     # Get the site-packages path of the virtual environment
-    site_packages=`python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())"`
+    site_packages=$(python3 -c "import distutils.sysconfig as s; print(s.get_python_lib())")
 
     # Create a link to OpenCV library
     ln -s ${opencv_lib} ${site_packages}
