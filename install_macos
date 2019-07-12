@@ -8,23 +8,22 @@
 # To install elsewhere you can clone the project
 #   git clone https://github.com/marcosgomesborges/dev-setup
 ###########################################################
-INSTALL_VERSION="0.0.3"
+INSTALL_VERSION="0.0.4"
 DEVSETUP_URL="https://raw.githubusercontent.com/marcosgomesborges/dev-setup/master/macos/devsetup"
 DEVSETUP_PREFIX="/usr/local"
 
-red="\033[91m"
-green="\033[92m"
-yellow="\033[93m"
-blue="\033[94m"
-magenta="\033[95m"
-nc="\033[39m"
+red="\033[91m%b\033[39m"
+green="\033[92m%b\033[39m"
+yellow="\033[93m%b\033[39m"
+blue="\033[94m%b\033[39m"
+magenta="\033[95m%b\033[39m"
 
 wait_for_user() {
-    printf "${yellow}\nPress RETURN to continue or any other key to abort!\n${nc}"
+    printf "${yellow}" "\nPress RETURN to continue or any other key to abort!\n"
 
-    read -s -n 1 key
+    read -rsn 1 key
     if [[ ${key} != "" ]]; then
-        printf "${red}\nInstallation aborted!${nc}"
+        printf "${red}" "\nInstallation aborted!"
         exit 1
     fi
 }
@@ -33,27 +32,28 @@ wait_for_sudo() {
     trap "exit 1" SIGINT # Process Interruption Ctrl-C
     sudo -K # Force sudo ask for a root password
 
-    printf "${yellow}\n[sudo] Enter password for ${USER}\n${nc}"
+    printf "${yellow}" "\n[sudo] Enter password for ${USER}\n"
     sudo -v
 
     # Abort if no sudo privileges
     if ! sudo -vn 2>/dev/null; then
-        printf "${red}Aborted: ${nc}"
+        printf "${red}" "Aborted: "
         printf "this script needs sudo privileges!\n"
         exit 1
     fi
 }
 
-printf "${magenta}\nCurrent directory: ${nc}"
-printf "`pwd`\n"
-printf "${magenta}This script installs 'devsetup' to: ${nc}"
+printf "\nmacOS devsetup install - version ${INSTALL_VERSION}\n"
+printf "${magenta}" "\nCurrent directory: "
+printf "$(pwd)\n"
+printf "${magenta}" "This script installs 'devsetup' to: "
 printf "${DEVSETUP_PREFIX}\n"
 
 wait_for_user
 wait_for_sudo
 
 sudo mkdir -p "${DEVSETUP_PREFIX}/DevSetup"
-sudo chown ${USER}:"admin" "${DEVSETUP_PREFIX}/DevSetup"
+sudo chown "${USER}:admin" "${DEVSETUP_PREFIX}/DevSetup"
 mkdir "${DEVSETUP_PREFIX}/DevSetup/bin"
 
 curl -fsSL "${DEVSETUP_URL}" -o "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup"
@@ -61,5 +61,5 @@ chmod +x "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup"
 
 ln -s "${DEVSETUP_PREFIX}/DevSetup/bin/devsetup" "/usr/local/bin"
 
-printf "${green}\Installation successful\n\n${nc}"
+printf "${green}" "\nInstallation successful\n\n"
 devsetup --help
