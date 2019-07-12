@@ -330,6 +330,13 @@ devsetup_install_pyenv() {
 
     print magenta "Installing Python 2.7.15, 3.6.5, 3.7.3\n"
     eval "$(pyenv init -)"
+
+    # BUGFIX pyenv 1.2.x on macOS 10.14.x
+    if [ "$(sw_vers -productVersion | cut -c -5)" == "10.14" ]; then
+        export SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk
+        export MACOSX_DEPLOYMENT_TARGET=10.14
+    fi
+
     PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 2.7.15
     PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.6.5
     PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install 3.7.3
