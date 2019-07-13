@@ -75,6 +75,29 @@ To install a package: `devsetup --install <package>`
 | ---               | ---                                                                           |
 | `ToDo`            | Coming soon!                                                                  |
 
+## Docker devsetup
+
+Building an app, installing the dependencies and services, automating the deployment, and more — it all starts with the Dockerfile.
+
+Check out my [Dockerfile examples](https://github.com/marcosgomesborges/dev-setup/tree/master/docker). Naturally, you’ll have to adapt the Dockerfile to your needs, but hopefully you get the idea of the possibilities.
+
+You will find examples to configure and install the following softwares:
+
+| Docker Package        | Description                                                                   |
+| ---                   | ---                                                                           |
+| `bash`                | Install the latest version of Bash                                            |
+| `bash-tab-completion` | Install bash tab completion 2, git-prompt, and docker tab completion          |
+| `pylibs`              | Install Python Libraries: TensorFlow, Keras, scientific libraires             |
+| `jupyterlab`          | Install Jupyterlab with extensions: toc, git, matplotlib                      |
+| `ffmpeg`              | Install FFmpeg with all modules                                               |
+| `opencv`              | Install OpenCV 4.1.0                                                          |
+
+### More Dockerfile examples
+
+* [NVIDIA CUDA and cuDNN](https://hub.docker.com/r/nvidia/cuda)
+* [TensorFlow Dockerfiles](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles)
+
+
 ## Contribute
 
 [Bug reports, suggestions](https://github.com/marcosgomesborges/dev-setup/issues), and [pull requests](https://github.com/marcosgomesborges/dev-setup/pulls) are welcome!

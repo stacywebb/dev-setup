@@ -1,0 +1,13 @@
+###########################################################
+# Docker Development Environment Setup
+#
+# Copyright (c) Marcos Gomes-Borges
+###########################################################
+FROM ubuntu:18.04
+LABEL maintainer "Marcos Gomes-Borges"
+
+WORKDIR /workspace/
+
+RUN apt-get update
+
+CMD [ "/bin/bash" ]

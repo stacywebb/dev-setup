@@ -1,0 +1,24 @@
+###########################################################
+# Docker Development Environment Setup
+#
+# Copyright (c) Marcos Gomes-Borges
+###########################################################
+version: '3'
+services:
+  bn5775:
+    image: 'img_name/tensorflow:19.01-py3'
+    build: .
+    ports:
+      - '30086:8888'
+    volumes:
+      - '${HOME}:/workspace'
+    devices:
+      - '/dev/nvidia0'
+      - '/dev/nvidia1'
+    deploy:
+      restart_policy:
+        condition: 'on-failure'
+      resources:
+        limits:
+          cpus: '10'
+          memory: '100gb'
