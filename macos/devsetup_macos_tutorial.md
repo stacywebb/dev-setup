@@ -395,6 +395,57 @@ echo "${INPUTRC}" > ${HOME}/.inputrc
     jupyter labextension install jupyter-matplotlib
     ```
 
+## Visual Studio Code - VS Code
+
+[VS Code](https://code.visualstudio.com/): Code editing. Redefined. For Windows, Linux and macOS.
+
+1. Launching VS Code from terminal:
+
+    You can also run VS Code from terminal by typing `code` after adding it to the path:
+
+   1. Launch VS Code.
+   2. Open the Command Palette (⇧⌘P) and type `shell command`.
+   3. Select the option `Install 'code' command in PATH`.
+   4. Restart the terminal application to update the PATH.
+
+    You'll be able to type `code .` in any folder to start editing files in that folder.
+
+2. User Settings:
+
+    Inside `script` directory you find my personal VS Code settings, `vs-code-settings.json`. Feel free to copy and add it to your VS Code user settings.
+
+3. VS Code as default git editor and diff tool:
+
+    You can set Visual Studio Code as default git editor and diff tool.
+
+    On the terminal application, copy and paste the following commands:
+
+    ```bash
+    # Set Code as default git editor
+    git config --global core.editor 'code --wait'
+    ```
+
+    ```bash
+    # Set Code as diff tool
+    git config --global diff.tool vscode
+    git config --global difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
+    ```
+
+## LaTeX with VS Code
+
+Requeriments (LaTeX):
+
+* LaTeX for Linux and Windows: I recommend installing [TeX Live](https://www.tug.org/texlive/).
+* LaTeX for macOS: I recommend installing [MacTeX](https://www.tug.org/mactex/), which contains all of TeX Live and a few Mac-specific additions.
+
+To edit and compile LaTeX projects using VS Code, I recommend LaTeX Workshop, which is an extension aiming to provide all-in-one features and utilities for LaTeX typesetting.
+
+Check the [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) website to discover more about the extension.
+
+To use LaTeX Workshop correctly, be sure to create a directory called `build` in the same place of your LaTeX file. To configure  LaTeX Workshop, take a look on my recipe file [vs-code-settings.json](./vs-code-settings.json).
+
+![LaTeX with VSCode](./LaTeX-VS-Code.png?raw=true)
+
 ## Installing FFmpeg
 
 [FFmpeg](https://ffmpeg.org/documentation.html) is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
