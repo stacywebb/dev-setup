@@ -6,6 +6,7 @@ Setting up a new development environment can be a manual and time-consuming proc
 * macOS - [see the tutorial page](./macos/devsetup_macos_tutorial.md)
 * Windows
 * Docker
+* Raspberry Pi - [see the tutorial page](./raspberrypi/devsetup_raspberrypi_tutorial.md)
 
 ## devsetup essential commands
 
@@ -97,6 +98,18 @@ You will find examples to configure and install the following softwares:
 * [NVIDIA CUDA and cuDNN](https://hub.docker.com/r/nvidia/cuda)
 * [TensorFlow Dockerfiles](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/dockerfiles)
 
+## Raspberry Pi
+
+Check out my tutorial [devsetup for Raspberry Pi](./raspberrypi/devsetup_raspberrypi_tutorial.md).
+
+You will find examples to configure and install the following items:
+
+| Raspberry Pi Package  | Description                |
+| ---                   | ---                        |
+| `SSH`                 | Enable the SSH access      |
+| `WiFi`                | Set up the WiFi connection |
+| `pylibs`              | Install Python Libraries   |
+| `opencv`              | Install OpenCV 4.1.0       |
 
 ## Contribute
 
