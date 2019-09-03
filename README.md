@@ -3,10 +3,10 @@
 Setting up a new development environment can be a manual and time-consuming process. This project aims to simplify the process with easy instructions and scripts to automate the setup of the following:
 
 * GNU/Linux
-* macOS - [see the tutorial page](./macos/devsetup_macos_tutorial.md)
+* macOS - [see the tutorial page](https://github.com/marcosgomesborges/dev-setup/blob/master/macos/devsetup_macos_tutorial.md)
 * Windows
 * Docker
-* Raspberry Pi - [see the tutorial page](./raspberrypi/devsetup_raspberrypi_tutorial.md)
+* Raspberry Pi - [see the tutorial page](https://github.com/marcosgomesborges/dev-setup/blob/master/raspberrypi/devsetup_raspberrypi_tutorial.md)
 
 ## devsetup essential commands
 
@@ -100,7 +100,7 @@ You will find examples to configure and install the following softwares:
 
 ## Raspberry Pi
 
-Check out my tutorial [devsetup for Raspberry Pi](./raspberrypi/devsetup_raspberrypi_tutorial.md).
+Check out my tutorial [devsetup for Raspberry Pi](https://github.com/marcosgomesborges/dev-setup/blob/master/raspberrypi/devsetup_raspberrypi_tutorial.md).
 
 You will find examples to configure and install the following items:
 
